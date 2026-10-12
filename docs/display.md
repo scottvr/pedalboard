@@ -79,3 +79,44 @@ attempts taught, each fixed in the place it belonged:
    anything but `build` found the generated vite bundle as a source of itself on reconfigure
    and ninja refused the cycle (targets `d107bfb`).
 5. Both aliases write the same `build/pedalboard.bin`; see `build-environment.md`.
+
+## Measuring what the display costs (plan, 2026-10-12)
+
+The upstream author measured the display stack's cost on the AMOLED 2.41 in the pedal repo's
+`docs/S3_DISPLAY_OFF_2026-09-28.md`: an audio-only image against the production image, same
+board, same model and preset, deterministic synthetic input, eight effect masks, three
+five-second profiles per cell, a 60-second soak, memory and section sizes, and SHA-256 of
+every image. We repeat that method on the kit with our own before and after, so the panel's
+cost on this board is a number next to his, not a feeling.
+
+**Before** is the headless `lafvin` image, **after** is `lafvin-display` with the panel idle
+(UI drawn, nobody touching it), which is what upstream measured. Both must be built on the
+same framework stack or the comparison measures the stack bump as well: build the headless
+image through the fork CLI and the side stack too (same command as `build-environment.md`
+with `--board lafvin` and its own build root), and keep the diagnostic Wi-Fi additions out of
+both. Record the sdkconfig diff between the two builds; only display-related lines may differ.
+
+Instruments, all over the maintenance API, so the Wi-Fi join is a prerequisite:
+
+1. `npm run remote -- --host IP effects-profile --seconds 5 --input synthetic --output
+   measurements/<date>/<image>-<n>-profile.json`, three times per image. Each run covers the
+   seven single-effect masks and the full chain; the table reports the mean per cell and the
+   limiting-stage reduction as upstream does.
+2. `npm run remote -- --host IP effects-soak --seconds 60 --production --output ...` once
+   per image: frames captured, core 0 and core 1 mean and max, silence, trims, drops, USB
+   errors, deadline misses.
+3. `status` during profiling for free internal SRAM and the largest free block; the build
+   log for image size; `xtensa-esp32s3-elf-size -A` on the ELF for `.iram0.text`,
+   `.dram0.data`, `.dram0.bss`, `.ext_ram.bss`, `.rtc.force_fast`.
+4. SHA-256 of both ELFs and binaries, kept with the raw JSON under `measurements/<date>/`
+   in this repository.
+
+Controls as upstream: CPU 240 MHz, 48 kHz, 64-frame blocks, NAM split 8, factory model 0,
+preset 0, the same eight masks, radios off during every audio window (`AUDIO TRY` does that).
+Differences to state in the write-up: the interface is the MOMIX CAB through UAC1 rather than
+the XTONE Pro through UAC2, and the panel is a 240x320 SPI TFT rotated at flush time rather
+than a QSPI AMOLED, so the idle cost includes the panel push task on core 1. A second "after"
+with the UI being scrolled is optional and separate; upstream did not measure it.
+
+The write-up goes in `docs/display-cost.md` here, in his table layout, with a pointer from
+the pedal repo only if the numbers end up in a PR.
