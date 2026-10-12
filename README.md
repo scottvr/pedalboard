@@ -7,6 +7,10 @@ learned on the way. Code lives in the repositories below; this one holds the pla
 and the reasons, in prose, so that someone adding a board to the pedal or to Gea does not
 have to reconstruct the process from commit messages.
 
+In an impressive feat, `dashersw` released [coyopedal](https://github.com/dashersw/coyopedal), NAM on an ESP32-S3 with the Waveshare ESP32-S3-Touch-AMOLED-2.06 as the reference board. Not having one on hand, I grabbed the first unused suitable-looking kit from the pile and forked coyopedal for a "quick" adjustment of a board definition, or so I thought.
+
+Turns out that what was on hand was not nearly as similar as I had assumed: some hardware hacking is involved, first-class UAC1 is now supported broadly without vendor-specific code, and the three `gea` repos got dragged in to support the TFT display and the capacitive touch chip.
+
 | Directory    | What it is                                                         | Upstream                    |
 | ------------ | ------------------------------------------------------------------ | --------------------------- |
 | `coyopedal/` (branch `lafvin-kit-notes`) | The NAM pedal firmware                | github.com/dashersw/coyopedal  |
@@ -17,7 +21,7 @@ have to reconstruct the process from commit messages.
 The four are plain sibling clones, gitignored here, not submodules: `BACKLOG.md` ("Upstream
 tracks") records which branch of each fork carries what, what it has run on, and its PR, which
 is all a reader needs to find the code. Forks live under github.com/scottvr; clone them here
-with `gh repo clone scottvr/<name>`, which adds the `upstream` remote.  When the code is complete and tested I will submit PRs to have the work upstreamed. If for whatever reason the PRs are not accepted, I'll merge the brancches herre into main on my own forks and maintain thm here.
+with `gh repo clone scottvr/<name>`, which adds the `upstream` remote.  When the code is complete and tested I will submit PRs to have the work upstreamed. If for whatever reason the PRs are not accepted, I'll merge the branches here into main in these forks and maintain them.
 
 ## Where to read
 
