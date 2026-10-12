@@ -105,6 +105,13 @@ Reading notes:
 - Free pins with the camera ribbon unplugged: GPIO3 and GPIO46 always; GPIO4 to GPIO13 and
   GPIO15 to GPIO18 then become free as well.
 
+Flash: the kit's dev board carries a Boya flash part. The pedal's sdkconfig keeps the Boya
+chip driver off on purpose (every chip driver's functions sit in IRAM, which costs DRAM on
+the S3; the AMOLED board has a GigaDevice part), so the boot log warns "Detected boya flash
+chip but using generic driver". The generic driver runs it at 80 MHz QIO; the chip driver
+would only add suspend support, and auto-suspend is out because it forces ~25 KiB of
+system code into IRAM. Expected, not a fault.
+
 ## Boards on hand (2026-10-09)
 
 "AMOLED" in the pedal's docs means the Waveshare ESP32-S3-Touch-AMOLED-2.06, the upstream
