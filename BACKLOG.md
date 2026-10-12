@@ -56,7 +56,9 @@ Display (tracks B and C below, then the bench):
 ## Upstream tracks
 
 Repositories: github.com/geastack/cli, geastack/targets, geastack/core (packages/chips). All
-GPL-3.0, one author, releases most days, no CONTRIBUTING file. State as of 2026-10-12.
+GPL-3.0, releases most days, no CONTRIBUTING file, and the one author is `dashersw`, who
+also wrote coyopedal: one upstream conversation covers all four repositories, and the Gea
+PRs go first because the pedal's board definition depends on them. State as of 2026-10-12.
 
 | Track | Change                                                                                                                                                                                                                                         | Repos               | Fork branch | Ran on hardware | PR  |
 | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- | ----------- | --------------- | --- |
