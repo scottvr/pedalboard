@@ -31,11 +31,8 @@ support contributed upstream; meanwhile the maintenance link works on the main n
 
 Wi-Fi tail (one bench visit):
 
-1. Main network: joins 2026-10-12 as a WPA2 client with the compatibility-mode overrides
-   ignored (`docs/wifi.md`); the module's bridged antenna-selection pads were the radio
-   problem, separated the same afternoon. `status` and `ota` answered over the link. Still to
-   do: confirm one unaided boot-to-IP from the carrier and one OTA round trip after the fix,
-   then remove the two marked diagnostics; external antennas arrive 2026-10-13.
+1. Done 2026-10-12: the main-network join (see Done). External antennas arrive 2026-10-13;
+   the SMA path makes the carrier socket irrelevant to the radio.
 2. `effects-profile` over the API: per-effect cost on this board (both cores sit at 87%).
 3. When the 1/4" to 1/8" cable arrives: loopback glitch count and the drift experiment
    (`docs/momix.md` "MOMIX drift", `docs/usb-audio.md` "Per-device timing"). Keep the input below full scale.
@@ -145,3 +142,6 @@ them with the command in `docs/build-environment.md`. Design: `docs/display.md`.
   Then: reason 4 and the gateway's retransmissions showed the uplink was the blocker, and the
   module's bridged antenna-selection pads were found and separated; the pedal joins the main
   network and answers `status` and `ota`. The compatibility-mode opt-out stays as a real fix.
+  Confirmed: unaided join from the carrier on the first try, OTA round trip validated and
+  rebooted into the new slot. Sprint "Wi-Fi tail" item 1 closed. Diagnostics removed from the
+  source afterwards (the images remain in `images/`).
