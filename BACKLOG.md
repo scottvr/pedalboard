@@ -31,10 +31,11 @@ support contributed upstream; meanwhile the maintenance link works on the main n
 
 Wi-Fi tail (one bench visit):
 
-1. Main network: joined 2026-10-12 as a WPA2 client with the compatibility-mode overrides
-   ignored (`docs/wifi.md`), IP 192.168.1.121, with a hand on the board for the last few dB.
-   Still to do: `discover`, `status`, one `ota` round trip while it is up; then the antenna
-   (spare module in the same carrier, placement) so it joins without help.
+1. Main network: joins 2026-10-12 as a WPA2 client with the compatibility-mode overrides
+   ignored (`docs/wifi.md`); the module's bridged antenna-selection pads were the radio
+   problem, separated the same afternoon. `status` and `ota` answered over the link. Still to
+   do: confirm one unaided boot-to-IP from the carrier and one OTA round trip after the fix,
+   then remove the two marked diagnostics; external antennas arrive 2026-10-13.
 2. `effects-profile` over the API: per-effect cost on this board (both cores sit at 87%).
 3. When the 1/4" to 1/8" cable arrives: loopback glitch count and the drift experiment
    (`docs/momix.md` "MOMIX drift", `docs/usb-audio.md` "Per-device timing"). Keep the input below full scale.
@@ -141,3 +142,6 @@ them with the command in `docs/build-environment.md`. Design: `docs/display.md`.
   pedal deauthenticating after handshake message 3 with reason 17, the gateway's WPA3
   compatibility-mode override element differing from its beacon (`docs/wifi.md`); a
   diagnostic image with a frame tap, supplicant debug and a reconnect backoff was built.
+  Then: reason 4 and the gateway's retransmissions showed the uplink was the blocker, and the
+  module's bridged antenna-selection pads were found and separated; the pedal joins the main
+  network and answers `status` and `ota`. The compatibility-mode opt-out stays as a real fix.

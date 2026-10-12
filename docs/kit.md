@@ -112,6 +112,11 @@ chip but using generic driver". The generic driver runs it at 80 MHz QIO; the ch
 would only add suspend support, and auto-suspend is out because it forces ~25 KiB of
 system code into IRAM. Expected, not a fault.
 
+The kit's own dev board shipped with the WROOM module's two antenna-selection leads bridged
+(found 2026-10-12 while scraping the mask to fit an SMA connector; `wifi.md`). Separated, the
+radio joins the main network from the carrier unaided. Check this first on any module that
+hears the gateway far worse than a laptop beside it.
+
 ## Boards on hand (2026-10-09)
 
 "AMOLED" in the pedal's docs means the Waveshare ESP32-S3-Touch-AMOLED-2.06, the upstream

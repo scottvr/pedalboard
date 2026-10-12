@@ -142,3 +142,18 @@ is closed: with the override elements ignored the pedal is an ordinary WPA2 clie
 gateway. What remains is the antenna: the module in the carrier socket hears the gateway
 25 dB worse than the laptop beside it, and a hand on the board changes it. Next: a spare
 module in the same carrier, then antenna placement.
+
+**Root cause (2026-10-12, afternoon).** While preparing the module for an SMA connector, the
+two antenna leads on the WROOM's antenna-selection pads turned out to be bridged. Separating
+them, with the solder mask scraped back, made the radio work "like a champ": the join
+completes unaided from the carrier. A bridged antenna selection mismatches the PCB antenna,
+which is exactly a radio that receives 25 dB worse than it should and transmits worse still,
+and which a hand on the board can change. Every disconnect reason of the day was that one
+defect seen at different steps; the gateway's WPA3 compatibility mode was a second, real but
+smaller, obstacle. External antennas arrive 2026-10-13.
+
+What stays in the pedal: SAE compiled in with hash-to-element offered, the compatibility-mode
+opt-out for this gateway, the reconnect backoff and the richer event logging. What comes out
+once the PR text is settled: the supplicant debug print in sdkconfig and the frame-tap define,
+both marked as diagnostics. The frame tap itself stays in the tree, off by default; it earned
+its place.
