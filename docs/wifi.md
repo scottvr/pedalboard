@@ -93,9 +93,24 @@ meet its own requirements for the selected variant (the GCMP-256 variant require
 hash-to-element; the override lookup can fail) and says so only at debug level, which the
 diagnostic image lacked because the generated sdkconfig is sticky and kept level 3.
 
-Next: `disable_wpa3_compatible_mode` in the station config (board define
-`COYOPEDAL_WIFI_NO_WPA3_COMPAT`), joining as the legacy WPA2 client the base element is
-there for; then, for the root cause, the debug-level image after a fresh configure.
+**12:xx, compatibility-mode overrides ignored** (`COYOPEDAL_WIFI_NO_WPA3_COMPAT=1`, image
+`lafvin-20261012-6cc39f6-wifi-nocompat`). The gateway answers open-system authentication
+within 13 ms, status 0, and then retransmits that answer four to six times in forty
+milliseconds: it is not receiving the pedal's acknowledgements. The association request
+that follows is never answered; after one second the driver reports reason 4
+(`ASSOC_EXPIRE`). The pedal hears the gateway at -70 dBm; the laptop beside the pedal hears
+the same gateway at -45. This morning's capture showed the same asymmetry from the other
+side: every gateway frame retransmitted, every pedal frame carrying the retry flag.
+
+So there were two problems all along. The protocol one is settled: with the override
+elements ignored the gateway treats the pedal as a WPA2 client at once, and the flag stays.
+The physical one is the blocker: the uplink is too weak for the gateway to hear the pedal
+reliably, which explains reason 2 (authentication unheard), reason 15 (handshake frames
+unheard), reason 4 (association unheard), the intermittent successes and the "cooldown"
+silences. The WROOM module's antenna sits in the carrier's socket beside the display frame,
+the battery and the speaker magnets. Next: the same image within a couple of metres of the
+gateway in line of sight, then the board out of the carrier; note the RSSI the pedal reports
+at each spot against the laptop's -45.
 
 ## For the upstream conversation (draft)
 
