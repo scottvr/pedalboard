@@ -47,7 +47,8 @@ Display (tracks B and C below, then the bench):
    `chips.display` (spi, st7789, 240x320, BGR, 40 MHz) and `chips.touch` (ft6336, polled), its
    `package.json` block (`cssDevicePixelRatio` 1, logical 320x240) and partition table, built
    against the forks through the CLI's package-path overrides (`docs/build-environment.md`).
-   Still to do: the first fork build, and the dependency-stack question in `docs/display.md`.
+   First fork build done the same day: it links (`docs/display.md`, "First fork build"); the
+   image is `images/lafvin-display-20261012-fa703b1-first-link`.
 6. First light on the panel: orientation, colour order, inversion, then touch. Raise the SPI
    clock only after it is right at 40 MHz.
 7. Write results into `docs/display.md`; PRs go up only after the panel has run.

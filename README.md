@@ -48,11 +48,16 @@ with `gh repo clone scottvr/<name>`, which adds the `upstream` remote.  When the
   byte-identical to the fixture in `tests/usb/`, capture and playback counts match in every
   5 s window, no errors or missed blocks, both cores at about 87% of the 1333 us block. Latency
   passes by ear; the loopback and drift measurements wait for a cable.
-- The board has been seated back in the carrier for these runs, with the native USB port
-  hosting the MOMIX; the display, touch and speaker need the upstream Geastack work tracked
-  in `BACKLOG.md` ("Upstream tracks") before they can be used. The design is in `docs/display.md`.
-- Maintenance mode over Wi-Fi: the AT&T gateway runs WPA2/WPA3 transition mode and left the
-  four-way handshake unanswered until WPA3 was compiled in (commit `e6dc162`; see `docs/wifi.md`). The main-network test with that build is the next bench item.
+- The board sits in the carrier with the native USB port hosting the MOMIX. The display and
+  touch are written on the Geastack side (forks, branch `lafvin-composed-display`, tracks B
+  and C in `BACKLOG.md`) and the display image builds and links; it waits for the hardware
+  mod (pins 0, 19, 20 lifted; two panel lines jumpered) before first light. Design and the
+  first fork build: `docs/display.md`. The speaker is track D, not started.
+- Maintenance mode over Wi-Fi works on the main network since 2026-10-12: the AT&T gateway
+  runs WPA3 compatibility mode and the pedal joins it as the WPA2 client it advertises for
+  legacy devices; the kit's module also had bridged antenna-selection pads, now separated.
+  `status` and `ota` answer at 192.168.1.121. The whole chase is in `docs/wifi.md`. External
+  antennas arrive 2026-10-13.
 - The working list is `BACKLOG.md`: current sprint, upstream tracks, backlog,
   done log.
 - Rob Murru's custom MOMIX firmware is only needed when the MOMIX headphone jack is the

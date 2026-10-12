@@ -33,6 +33,10 @@ EXPANDER`, `GEA_EMBEDDED_NO_DISPLAY=1` when there is neither display nor canvas,
 
 ### What is missing upstream
 
+(As surveyed 2026-10-12 before the fork work. The display and touch gaps below are now
+closed in the forks, branch `lafvin-composed-display`; see `display.md`. The audio gap,
+track A, remains.)
+
 Checked again 2026-10-12 against targets 0.1.101, cli 0.1.102 and chips 0.1.6 (all three
 repositories are public on GitHub under `geastack/`, GPL-3.0, one author, releases most days).
 None of the three gaps has closed, but the composer is being extended in exactly this area:
