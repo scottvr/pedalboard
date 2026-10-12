@@ -57,3 +57,42 @@ Paths with no repository prefix are in `coyopedal/`; the forks are named where t
   Diagnostic build: `WPA3_SAE_PWE_BOTH`, plus `CONFIG_ESP_WIFI_DEBUG_PRINT=y` (about 60 KB) so a
   rejected SAE commit logs its status code instead of only reason 2. Remove the debug print
   once the join is understood.
+
+## Two sniffer captures (2026-10-12, the Mac's built-in radio, channel 9)
+
+Wireless Diagnostics' sniffer on the MacBook Air captures 802.11 frames with radiotap headers;
+management frames and the EAPOL frames of the four-way handshake are in the clear even under
+WPA3. Files stay in `tmp/` (gitignored). `tshark` from Wireshark.app reads them.
+
+**08:04, gateway in "WPA3 compatible" mode.** The pedal's SAE commit with hash-to-element
+(status 126, group 19) is answered in 15 ms; SAE confirm succeeds; association succeeds;
+handshake message 1 arrives, the pedal sends message 2, message 3 arrives, and the pedal
+itself sends a deauthentication with reason 17, "element in the four-way handshake differs
+from the beacon". Ten such rounds in twenty minutes. The gateway's beacon carries a base RSN
+element with PSK only and no management-frame protection, plus Wi-Fi Alliance override
+elements: RSNE Override (SAE SHA-256, protection required), RSNE Override 2 (GCMP-256,
+group-dependent SAE) and an RSNXE Override with hash-to-element. The pedal's association
+request selected the override (RSN Selection element) and advertised protection required.
+The ESP-IDF 6.0.2 supplicant (`rsn_supp/wpa.c`, under `CONFIG_WPA3_COMPAT`) compares the
+override elements it saw in the beacon with the ones in message 3's key data and
+deauthenticates on any difference; it logs both as hex at INFO level, which the console
+showed only once in the window. It knows the first override and the RSNXE override, not
+Override 2.
+
+Between those rounds the pedal logged minutes of `auth -> init`, reason 2: the gateway
+ignoring it. Power-cycling the pedal, waiting, and rebooting the gateway did not shorten it.
+
+**11:20, gateway switched to "WPA2/WPA3 transition" (and rebooted earlier).** The beacon has
+the same base-plus-override layout as in compatibility mode, so on this gateway both WPA3
+settings use the override mechanism. In ninety seconds beside the pedal the sniffer heard only
+its probe requests (-18 to -28 dBm), no authentication frame from it and nothing to it, while
+the pedal logged `init -> auth` and reason 2 each cycle. The pedal's own frame tap (the
+diagnostic image) agreed: nothing received. So in this state the driver enters authentication
+but no commit reaches the air. The supplicant declines to build an SAE commit when it cannot
+meet its own requirements for the selected variant (the GCMP-256 variant requires
+hash-to-element; the override lookup can fail) and says so only at debug level, which the
+diagnostic image lacked because the generated sdkconfig is sticky and kept level 3.
+
+Next: `disable_wpa3_compatible_mode` in the station config (board define
+`COYOPEDAL_WIFI_NO_WPA3_COMPAT`), joining as the legacy WPA2 client the base element is
+there for; then, for the root cause, the debug-level image after a fresh configure.
