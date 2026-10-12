@@ -61,3 +61,13 @@ reads, so after a display build copy it aside (`build/pedalboard-display.bin`) a
 headless image before flashing the bench board. A clean build on this Mac is about forty
 minutes the first time (every IDF component is compiled; the configure alone is twenty-five on
 the spinning disk) and a few minutes after that.
+
+## Saving images
+
+Every build worth flashing again is filed with `tools/save-image.sh <alias> <tag> [build-root]`
+right after it is built: the binary, ELF and map land in `images/` under a composite name
+(`<alias>-<date>-<pedal commit>-<tag>`) and `images/INDEX.md` gets a row with the four repos'
+commits, the framework stack, sizes and SHA-256 prefixes. The files are gitignored, the index
+is committed. Flash a saved image with `npx gea flash --board <alias> --no-build --image
+../images/<name>.bin`. Overrides when the build was set aside or built on the side stack:
+`BIN=`, `SHA=`, `STACK=`, `NOTES=` in the environment.

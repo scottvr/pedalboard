@@ -1,23 +1,23 @@
-# Pedalboard: a NAM guitar pedal on the LAFVIN ESP32-S3 Multimedia Kit
+# Pedalboard: a NAM guitar pedal on the LAFVIN ESP32-S3 Multimedia Kit (based on coyoboard)
 
 The working repository for everything the project touches that is not one repository's own
 business: the kit, the hardware mod, the JOYO MOMIX CAB interface, the Geastack changes that
 let a composed board drive the kit's panel and touch, the bench procedures, and what was
 learned on the way. Code lives in the repositories below; this one holds the plan, the notes
 and the reasons, in prose, so that someone adding a board to the pedal or to Gea does not
-have to reconstruct them from commit messages.
+have to reconstruct the process from commit messages.
 
 | Directory    | What it is                                                         | Upstream                    |
 | ------------ | ------------------------------------------------------------------ | --------------------------- |
-| `coyopedal/` | The pedal firmware fork (branch `lavfin-kit-notes`)                | the original author's repo  |
-| `cli/`       | Fork of `@geastack/cli` (`gea` CLI, the custom-target composer)    | github.com/geastack/cli     |
-| `targets/`   | Fork of `@geastack/targets` (board sources, ESP32 bindings)        | github.com/geastack/targets |
-| `core/`      | Fork of `@geastack/core` (`packages/chips` holds the chip catalog) | github.com/geastack/core    |
+| `coyopedal/` (branch `lafvin-kit-notes`) | The NAM pedal firmware                | github.com/dashersw/coyopedal  |
+| `cli/`  (branch `lafvin-composed-display`)     | Fork of `@geastack/cli` (`gea` CLI, the custom-target composer)    | github.com/geastack/cli     |
+| `targets/`  (branch `lafvin-composed-display`) | Fork of `@geastack/targets` (board sources, ESP32 bindings)        | github.com/geastack/targets |
+| `core/` (branch `lafvin-composed-display`)     | Fork of `@geastack/core` (`packages/chips` holds the chip catalog) | github.com/geastack/core    |
 
 The four are plain sibling clones, gitignored here, not submodules: `BACKLOG.md` ("Upstream
 tracks") records which branch of each fork carries what, what it has run on, and its PR, which
 is all a reader needs to find the code. Forks live under github.com/scottvr; clone them here
-with `gh repo clone scottvr/<name>`, which adds the `upstream` remote.
+with `gh repo clone scottvr/<name>`, which adds the `upstream` remote.  When the code is complete and tested I will submit PRs to have the work upstreamed. If for whatever reason the PRs are not accepted, I'll merge the brancches herre into main on my own forks and maintain thm here.
 
 ## Where to read
 
