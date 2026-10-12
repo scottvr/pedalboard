@@ -96,3 +96,25 @@ diagnostic image lacked because the generated sdkconfig is sticky and kept level
 Next: `disable_wpa3_compatible_mode` in the station config (board define
 `COYOPEDAL_WIFI_NO_WPA3_COMPAT`), joining as the legacy WPA2 client the base element is
 there for; then, for the root cause, the debug-level image after a fresh configure.
+
+## For the upstream conversation (draft)
+
+The PR that carries the Wi-Fi changes must say this up front, because our commit `e6dc162`
+removed the author's comment and its dead assignment, and he should not have to doubt the
+change to find out why:
+
+> Your comment on `pmf_cfg.capable` was right about the symptom and close on the mechanism:
+> some gateways accept association and then drop the four-way handshake with reason 15
+> when the station advertises management-frame protection. A capture on an AT&T gateway
+> shows what those routers are: WPA3 compatibility mode, a base RSN element with PSK and no
+> protection for legacy clients plus override elements carrying SAE with protection
+> required. A station that advertises protection against the base element is neither kind
+> of client, and the handshake dies. Your fix stopped advertising it. ESP-IDF 6 deprecates
+> that field and forces it true, so the assignment had become a no-op without a warning,
+> which is why the fork hit the same reason 15 with the comment still in place. The same
+> decision now lives in `disable_wpa3_compatible_mode` (ignore the overrides, join as the
+> legacy WPA2 client the base element is there for), with SAE compiled in and
+> hash-to-element offered for networks that are WPA3 all the way. The comment is rewritten
+> to say so and to keep your observation.
+
+Adjust the last sentences to whichever variant actually joins on the bench.
