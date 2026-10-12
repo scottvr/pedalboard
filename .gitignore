@@ -1,0 +1,6 @@
+# The four repositories are sibling clones, not part of this repository.
+coyopedal/
+cli/
+targets/
+core/
+.DS_Store
