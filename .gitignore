@@ -4,3 +4,4 @@ cli/
 targets/
 core/
 .DS_Store
+tmp/

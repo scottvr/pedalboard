@@ -1,0 +1,14 @@
+{
+  "name": "gea-stack-for-forks",
+  "private": true,
+  "description": "The @geastack framework packages the fork targets expect; the CLI's GEA_*_DIR overrides point here so the pedal's own lockfile stays pinned.",
+  "dependencies": {
+    "@geastack/compiler": "1.0.29",
+    "@geastack/core": "^0.1.40",
+    "@geastack/elements": "^0.1.6",
+    "@geastack/engine": "^0.1.16",
+    "@geastack/geaos": "^0.1.3",
+    "@geastack/geatsc-plugin-gea": "^0.1.22",
+    "@geastack/host": "^0.1.15"
+  }
+}

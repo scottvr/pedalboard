@@ -61,8 +61,8 @@ GPL-3.0, one author, releases most days, no CONTRIBUTING file. State as of 2026-
 | Track | Change                                                                                                                                                                                                                                         | Repos               | Fork branch | Ran on hardware | PR  |
 | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- | ----------- | --------------- | --- |
 | A     | Gate the ES8311 binding on a composed board's audio chip (`GEA_CUSTOM_TARGET_HAS_AUDIO`, fall back to `audio_runtime_stub.cpp`); one-line `GEA_BOARD_HAS_POWER` for `s3-devkit`                                                                | cli, targets        | not started | no              |     |
-| B     | SPI panel for composed targets: composer accepts `interface: "spi"` (st7789 first), emits the ST7789 display struct and defines; base CMake includes the sticks3 pipeline; pipeline gains colour order, inversion and optional backlight/reset | cli, targets, chips | `lafvin-composed-display`: cli 5aea1d9, targets c84bff1, core 14f08ad | no              |     |
-| C     | FT6336 touch adapter in the chips catalog; the binding gains the Touchscreen surface (`ft6336_touchscreen.cpp`), viewport mapping and the audio task-priority rule; the base's touch gate already admits any non-FT3168 driver                | chips, targets      | `lafvin-composed-display`: targets ca3372d, core 14f08ad | no              |     |
+| B     | SPI panel for composed targets: composer accepts `interface: "spi"` (st7789 first), emits the ST7789 display struct and defines; base CMake includes the sticks3 pipeline; pipeline gains colour order, inversion and optional backlight/reset | cli, targets, chips | `lafvin-composed-display`: cli 5aea1d9, targets c84bff1 f65c525 d107bfb, core 14f08ad | builds, not flashed |     |
+| C     | FT6336 touch adapter in the chips catalog; the binding gains the Touchscreen surface (`ft6336_touchscreen.cpp`), viewport mapping and the audio task-priority rule; the base's touch gate already admits any non-FT3168 driver                | chips, targets      | `lafvin-composed-display`: targets ca3372d, core 14f08ad | builds, not flashed |     |
 | D     | Codec-less I2S DAC binding for the PCM5100 (I2S half of the ES8311 binding without the codec-dev calls); only if the kit's speakers become the monitor path                                                                                    | targets, chips      | not started | no              |     |
 | E     | Ask whether the LAFVIN target belongs in `@geastack/targets` once B and C are in                                                                                                                                                               | targets             |             |                 |     |
 
@@ -132,3 +132,9 @@ them with the command in `docs/build-environment.md`. Design: `docs/display.md`.
   Tracks B and C written in the forks (host-tested, not yet built into the pedal); the
   display board variant added to the pedal. This repository created; the project notes moved
   here from `coyopedal/docs/lavfin/` and split by topic.
+  The display variant then built and linked against the forks through a side framework stack
+  (`docs/display.md`, "First fork build"); two more upstream fixes fell out (odometer, source
+  walk). Wi-Fi: a Mac sniffer capture showed SAE succeeding with hash-to-element and the
+  pedal deauthenticating after handshake message 3 with reason 17, the gateway's WPA3
+  compatibility-mode override element differing from its beacon (`docs/wifi.md`); a
+  diagnostic image with a frame tap, supplicant debug and a reconnect backoff was built.

@@ -60,7 +60,22 @@ What the forks now carry (2026-10-12, branch `lafvin-composed-display` in each):
   its `package.json` board block (`cssDevicePixelRatio` 1, logical 320x240 over the native
   240x320) and partition table. The headless definition is unchanged.
 
-Open question for the first fork build: the forks sit on the compiler 1.0.29 stack (targets
-0.1.101 wants core ^0.1.40) while this repo pins core 0.1.35, engine 0.1.10, host 0.1.12. If
-the base target's CMake references framework sources the pinned core lacks, the stack bump
-in coyopedal's `skills/updating-gea-dependencies` comes first.
+## First fork build (2026-10-12, host side)
+
+The display variant builds and links against the forks: 3,486,272 bytes, 17% of the 4 MB
+slot free (the headless image is 2.4 MB; the panel pipeline, the Gea runtime loop and the
+fonts are the difference). Not yet flashed: the hardware mod has not been done. What the six
+attempts taught, each fixed in the place it belonged:
+
+1. The forks' base target needs the compiler 1.0.29 framework stack (core 0.1.40, host 0.1.15,
+   engine 0.1.16); the pedal's pinned core 0.1.35 lacks host sources it lists. Rather than bump
+   the pedal's lockfile for an experiment, a side install under `gea-stack/` feeds the CLI's
+   package-path overrides (`build-environment.md`). The pedal's native code compiled against
+   the newer framework without a change, so the eventual bump should be uneventful.
+2. The compiler must be exactly the locked 1.0.29, not the newest 1.0.x.
+3. The ST7789 pipeline and the RGB binding lacked `Display::flushOdometerRead`, which core's
+   display contract declares and the pedal's soak test reads; added to both (targets `f65c525`).
+4. The source walk that feeds code generation did not prune `.gea`, so a build root named
+   anything but `build` found the generated vite bundle as a source of itself on reconfigure
+   and ninja refused the cycle (targets `d107bfb`).
+5. Both aliases write the same `build/pedalboard.bin`; see `build-environment.md`.
