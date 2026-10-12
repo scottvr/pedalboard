@@ -31,9 +31,10 @@ support contributed upstream; meanwhile the maintenance link works on the main n
 
 Wi-Fi tail (one bench visit):
 
-1. Main network with the WPA3 build: `npm run remote:configure -- --ssid ATT33mamnd --force`,
-   build, flash `--no-build`, hold BOOT 1.5 s. Expect `wifi:connected with` within a second of
-   `assoc -> run`. Then `amoled_remote.py discover`, `status`, one `ota` round trip.
+1. Main network: joined 2026-10-12 as a WPA2 client with the compatibility-mode overrides
+   ignored (`docs/wifi.md`), IP 192.168.1.121, with a hand on the board for the last few dB.
+   Still to do: `discover`, `status`, one `ota` round trip while it is up; then the antenna
+   (spare module in the same carrier, placement) so it joins without help.
 2. `effects-profile` over the API: per-effect cost on this board (both cores sit at 87%).
 3. When the 1/4" to 1/8" cable arrives: loopback glitch count and the drift experiment
    (`docs/momix.md` "MOMIX drift", `docs/usb-audio.md` "Per-device timing"). Keep the input below full scale.

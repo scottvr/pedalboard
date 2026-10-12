@@ -133,3 +133,12 @@ change to find out why:
 > to say so and to keep your observation.
 
 Adjust the last sentences to whichever variant actually joins on the bench.
+
+**First join on the main network (2026-10-12, early afternoon).** Same image, pedal in the
+carrier, and a finger resting on the dev board: `security: WPA2-PSK, rssi: -67, pmf:0`,
+associated, IP 192.168.1.121 from the gateway. The gateway's block-ack action frame still
+needed one retransmission, so the link is marginal rather than fixed, but the protocol side
+is closed: with the override elements ignored the pedal is an ordinary WPA2 client to this
+gateway. What remains is the antenna: the module in the carrier socket hears the gateway
+25 dB worse than the laptop beside it, and a hand on the board changes it. Next: a spare
+module in the same carrier, then antenna placement.
