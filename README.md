@@ -1,4 +1,4 @@
-# Pedalboard: a NAM guitar pedal on the LAFVIN ESP32-S3 Multimedia Kit (based on coyoboard)
+# a NAM guitar pedal on the LAFVIN ESP32-S3 Multimedia Kit (based on coyoboard)
 
 The working repository for everything the project touches that is not one repository's own
 business: the kit, the hardware mod, the JOYO MOMIX CAB interface, the Geastack changes that
