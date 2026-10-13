@@ -11,7 +11,8 @@ either: BL is on, RST follows EN.
 
 Pieces, in the order they are needed:
 
-1. **Hardware.** Lift dev-board pins 0, 19 and 20 (BOOT stays the footswitch, the native USB
+1. **Hardware.** (Pins 0, 19 and 20 have been lifted since before first light; only the
+   jumpers remain.) Lift dev-board pins 0, 19 and 20 (BOOT stays the footswitch, the native USB
    pair stays the host port). Jumper the panel's MOSI and DC pads to two camera pins with the
    ribbon unplugged, GPIO 16 and 17 for example. GPIO 3 and 46 stay with the ES8311 stopgap
    until upstream track A removes the need for it; the composer rejects pin collisions, so the

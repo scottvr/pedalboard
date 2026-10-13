@@ -39,10 +39,12 @@ Wi-Fi tail (one bench visit):
 
 Display (tracks B and C below, then the bench):
 
-4. Hardware mod, in this order: lift dev-board pins 0, 19, 20; jumper the panel's MOSI and DC
-   to two camera pins with the ribbon unplugged (GPIO 16 and 17, say). Keep GPIO 3 and 46 for
-   the ES8311 stopgap until track A lands. The carrier routes no backlight or reset GPIO to the
-   panel: BL is always on, RST follows EN.
+4. Hardware mod. Pins 0, 19 and 20 were lifted before the 2026-10-10 first-light runs (the
+   board has sat in the carrier with the native port hosting the MOMIX and BOOT as the
+   footswitch since). Left: two signal jumpers with the camera ribbon unplugged, the panel's
+   MOSI pad to GPIO 16 and its D/C pad to GPIO 17, the pins the display definition names.
+   SCK 21 and CS 47 stay as wired; GPIO 3, 46 and 15 stay with the ES8311 stopgap. The
+   carrier routes no backlight or reset GPIO to the panel: BL is always on, RST follows EN.
 5. Done 2026-10-12 (host side): `boards/esp32-s3-lafvin-multimedia-2.8-display.json` with
    `chips.display` (spi, st7789, 240x320, BGR, 40 MHz) and `chips.touch` (ft6336, polled), its
    `package.json` block (`cssDevicePixelRatio` 1, logical 320x240) and partition table, built

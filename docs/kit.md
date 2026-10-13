@@ -44,6 +44,10 @@ are ADC_BAT and TFT_MOSI, and GPIO 0 (BOOT, the pedal's footswitch) is TFT_DC.
 
 ### Planned hardware mod
 
+(Steps 1 and 2 were done before the 2026-10-10 first-light runs: pins 0, 19 and 20 are lifted,
+the native port hosts the MOMIX and BOOT is the footswitch. Step 3, the two panel jumpers, is
+the open item; step 4 was measured 2026-10-10 as written.)
+
 1. Lift dev-board pins 19 and 20 out of the carrier socket (bend, do not cut carrier traces,
    so no stubs stay on the USB data lines). The battery ADC is lost; the pedal never reads it.
 2. Lift pin 0 as well, so the BOOT button stays the pedal's footswitch (hard-coded as GPIO 0 in
