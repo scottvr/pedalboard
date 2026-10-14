@@ -35,7 +35,7 @@ Wi-Fi tail (one bench visit):
    the SMA path makes the carrier socket irrelevant to the radio.
 2. `effects-profile` over the API: per-effect cost on this board (both cores sit at 87%).
 3. Cable arrived 2026-10-13 (TRS 1/4" to 1/8"): loopback glitch count and the drift experiment
-   (`docs/momix.md` "MOMIX drift", `docs/usb-audio.md` "Per-device timing"). Keep the input below
+   (`docs/audio/momix.md` "MOMIX drift", `docs/audio/usb-audio.md` "Per-device timing"). Keep the input below
    full scale. The glitch counter (`AUDIO TRY` option, backlog) is not written yet; write and
    host-test it before the bench visit, or run the first pass with the host-side counters alone.
 
@@ -84,12 +84,15 @@ them with the command in `docs/build-environment.md`. Design: `docs/display.md`.
   async capture, see "MOMIX drift" and "Per-device timing" in NOTES).
 - Loopback glitch counter as an `AUDIO TRY` option (NOTES: "Per-device timing", step 3). Can
   be written and host-tested before the cable arrives.
-- Quirk table keyed by VID:PID; iRig HD 2 profile retirement (plan in `docs/usb-audio.md`; needs the author's
+- Quirk table keyed by VID:PID; iRig HD 2 profile retirement (plan in `docs/audio/usb-audio.md`; needs the author's
   HD 2 dump and a switch to route the HD 2 through the generic path).
-- `MOMIX BACKUP` / `MOMIX FLASH` maintenance commands (design in `docs/momix.md`, "Planned: flashing the
+- `MOMIX BACKUP` / `MOMIX FLASH` maintenance commands (design in `docs/audio/momix.md`, "Planned: flashing the
   MOMIX from the pedal"). Prerequisite: the manual breakout + jl-uboot-tool route proven once.
 - Hide the speaker control when the board's codec init fails (verify the binding already does).
 - Remove the ES8311 stopgap from the LAFVIN definition once track A lands.
+- `tools/audio-devices-table.py`: read the front matter of every `docs/audio/devices/*.md`
+  sheet and render the "Interfaces assessed" table in `docs/audio/usb-audio.md` from it, so the
+  sheets are the single source. Host-side, any time; worth it once a second sheet exists.
 - Ask upstream to rename `tools/esp32/amoled_remote.py`: its messages already say "CoyoPedal"
   on any board (fork commit `7b81d9c`) and its discovery match was never board-specific; only
   the file name lags. Low priority, easy ask alongside the UAC1 PR.
@@ -125,7 +128,7 @@ boot needs no further purchase; a DSI panel board is optional, later.
 
 ### Upstream coyopedal (after hardware results)
 
-- Outreach to the author (sequence in `docs/usb-audio.md`, "iRig HD 2 profile retirement"), then the UAC1 PR
+- Outreach to the author (sequence in `docs/audio/usb-audio.md`, "iRig HD 2 profile retirement"), then the UAC1 PR
   with a hardware-testing statement, README board table, `docs/USB_AUDIO.md`, skill updates.
 - WPA3 commit `e6dc162` goes in the same conversation; its message is written to be the PR text.
 

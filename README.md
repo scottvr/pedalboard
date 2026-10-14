@@ -33,10 +33,13 @@ with `gh repo clone scottvr/<name>`, which adds the `upstream` remote.  When the
   targets, and what the forks carry.
 - `docs/geastack.md`: how app-local composed targets work, what upstream lacks, the headless
   milestone, the blockers found.
-- `docs/usb-audio.md`: the pedal's USB audio discovery and pacing, the interfaces assessed,
+- `docs/audio/usb-audio.md`: the pedal's USB audio discovery and pacing, the interfaces assessed,
   the proposed timing method, the iRig HD 2 retirement plan.
-- `docs/momix.md`: the JOYO MOMIX CAB, its stock and custom firmware, the drift, and the plan
+- `docs/audio/momix.md`: the JOYO MOMIX CAB, its stock and custom firmware, the drift, and the plan
   to flash it from the pedal.
+- `docs/audio/device-sheet-template.md`: the per-interface test sheet (checklist and values);
+  filled sheets live in `docs/audio/devices/`, one per interface, with the values in front
+  matter so a table can be generated from them later.
 - `docs/wifi.md`: joining the maintenance network, finding by finding.
 - `docs/build-environment.md`: ESP-IDF on this Mac, the aliases, the fork bench workflow.
 - `docs/p4.md`: the project after the kit, NAM on an ESP32-P4: what the chip changes, where
