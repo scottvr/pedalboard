@@ -73,12 +73,19 @@ device is invisible to the host; only the loopback test below can see it.
 
 ## Still open
 
-1. **Loopback glitch test**, as an `AUDIO TRY` option: play a tone, loop the interface's output
-   back to its input with a cable, and count discontinuities in the captured sine with the
-   two-sample recurrence `x[n] = 2 cos(w) x[n-1] - x[n-2]`. Report glitches per minute and the
-   implied drift (a 32-sample drop every T seconds is `32 / (48000 T)` ppm). It is the only
-   host-side way to see device-internal drop or duplicate, needs nothing beyond a TRS cable,
-   and runs with the DSP bypassed. Can be written and host-tested before the cable arrives.
+1. **Loopback glitch test**: written 2026-10-13 (pedal commit `7f3cbcb`) as `AUDIO TRY <s> LOOPBACK [HZ <f>] [LEVEL
+   <dB>]` (`src/audio/loopback_probe.hpp`, host test `tests/loopback_probe_test.cpp`), not yet
+   run on hardware. The DSP steps aside; a 997 Hz tone at -12 dBFS goes out in ten-second
+   bursts and the return is checked with the two-sample recurrence `x[n] = 2 cos(w) x[n-1] -
+   x[n-2]`, whose residual is zero for any sine and a spike at a dropped or repeated sample.
+   Beyond the glitch count it measures what the sheet asks for: each burst starts from phase
+   zero, so its return frame against its departure frame is the round-trip latency in
+   samples, and the slope of that latency across bursts is the drift in ppm with no guess
+   about the size of each jump (a 32-sample drop every 6.7 s reads about -100 ppm). The
+   host test checks a clean loop, the MOMIX custom firmware's 32-sample drops, single-sample
+   slips at 997 Hz (most caught) and 3 kHz (all caught), an open loop, a round trip longer than
+   the gap, and a clipped return. Bench procedure: `skills/measuring-pedal-audio/SKILL.md`,
+   "The loopback test".
 2. **Quirk table**, in code, keyed by VID:PID, as `snd-usb-audio` does, never a file on the SD
    card (SD mounting is deferred past the NAM bank placement on purpose, and discovery must
    not depend on it). Timing fields only when a device proves it needs them: pacing override

@@ -83,9 +83,11 @@ unchecked; the cable for section 5 arrived 2026-10-13.
 
 ## 5. Loopback glitch test
 
-- [ ] Not run. The 1/4" to 1/8" TRS cable arrived 2026-10-13; the counting `AUDIO TRY` option
-      is not written yet (`../usb-audio.md`, "Still open", item 1). Keep the input below full
-      scale.
+- [ ] Not run. The 1/4" to 1/8" TRS cable arrived 2026-10-13 and `AUDIO TRY 300 LOOPBACK`
+      was written the same day (host-tested, not yet on hardware). MOMIX headphone out to the
+      guitar in; keep the return below full scale. Expected if the stock firmware applies no
+      adaptation: 0 glitches and 0 ppm; the custom firmware would read about -100 ppm with a
+      glitch every 6.7 s.
 
 ## 6. Latency and signal path
 

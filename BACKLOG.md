@@ -36,8 +36,9 @@ Wi-Fi tail (one bench visit):
 2. `effects-profile` over the API: per-effect cost on this board (both cores sit at 87%).
 3. Cable arrived 2026-10-13 (TRS 1/4" to 1/8"): loopback glitch count and the drift experiment
    (`docs/audio/momix.md` "MOMIX drift", `docs/audio/usb-audio.md` "Per-device timing"). Keep the input below
-   full scale. The glitch counter (`AUDIO TRY` option, backlog) is not written yet; write and
-   host-test it before the bench visit, or run the first pass with the host-side counters alone.
+   full scale. The counter exists since 2026-10-13: `AUDIO TRY 300 LOOPBACK` (pedal commit
+   `7f3cbcb`), host-tested; it also measures the round-trip latency and the drift. First
+   hardware run is this item.
 
 Display (tracks B and C below, then the bench):
 
@@ -82,8 +83,10 @@ them with the command in `docs/build-environment.md`. Design: `docs/display.md`.
 
 - UAC1 streaming fixes that the loopback test exposes (expected: rate adaptation against the
   async capture, see "MOMIX drift" and "Per-device timing" in NOTES).
-- Loopback glitch counter as an `AUDIO TRY` option (NOTES: "Per-device timing", step 3). Can
-  be written and host-tested before the cable arrives.
+- Loopback probe follow-ups once it has run on hardware: tune `glitch_ratio` and the hold-off
+  against a real return; decide whether the MOMIX sheet's latency should subtract the pedal's
+  own ring depth; a `loopback` verb in the remote tool that runs the window and prints the
+  summary.
 - Quirk table keyed by VID:PID; iRig HD 2 profile retirement (plan in `docs/audio/usb-audio.md`; needs the author's
   HD 2 dump and a switch to route the HD 2 through the generic path).
 - `MOMIX BACKUP` / `MOMIX FLASH` maintenance commands (design in `docs/audio/momix.md`, "Planned: flashing the

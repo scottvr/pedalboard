@@ -100,11 +100,13 @@ Values:
 
 ## 5. Loopback glitch test
 
-- [ ] TRS cable from the interface's output to its input, input gain set so the tone sits well
-      below full scale, DSP bypassed. Run the loopback `AUDIO TRY` option (see `../usb-audio.md`,
-      "Still open", item 1) for at least five minutes.
-- [ ] Record glitches per minute, the implied drift (a 32-sample drop every T seconds is
-      `32 / (48000 T)` ppm), and the input level used.
+- [ ] TRS cable from the interface's output to its input. `command AUDIO TRY 300 LOOPBACK`
+      (five minutes; `HZ 3000` to catch single-sample slips, `LEVEL 20` for a quieter tone).
+      Set the input gain so `return` sits 6 dB or more below full scale and `clipped` is 0.
+- [ ] From the `audio window loopback:` line: `glitches` and `analyzed` seconds (divide for
+      glitches per minute), `latency` first and last in frames, `drift` in ppm, the first
+      glitch timestamps, `not_quiet` and `noise`. Fill `loopback_glitches_per_min`,
+      `drift_ppm` and `latency_ms` above; the latency here includes the pedal's rings.
 - [ ] Listen to the same loop while it runs; note whether the counted glitches are audible.
 
 Values:
