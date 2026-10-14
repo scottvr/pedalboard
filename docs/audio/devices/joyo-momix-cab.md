@@ -12,7 +12,7 @@ capture_format: "1ch 16-bit 48k"
 playback_format: "2ch 16-bit 48k"
 capture_sync: "async (96), fixed size"
 playback_sync: "adaptive (192), no feedback endpoint"
-rate_control: ""
+rate_control: "none (CS endpoint attributes 0x00 on both 0x03 and 0x83); no rate request sent"
 discovery: "uac1 (uac2 declined it)"
 pacing: "frame-cadence"
 heartbeat_window_s: 5
@@ -38,7 +38,7 @@ unchecked; the cable for section 5 arrived 2026-10-13.
 
 - [x] Dumped live on the Mac 2026-10-09 with `tools/usb/dump_usb_config.py`; 215-byte
       configuration, fixture `tests/usb/momix-cab-stock-fw-configuration.bin`; the parse is
-      `momix-cab-stock-fw-usb-dump.txt`.
+      the appendix of `../momix.md`.
 - [x] Layout: IAD, control on interface 0, streams on 1 and 2. Playback stereo 16-bit 48 kHz,
       adaptive, EP 0x03, 192 bytes. Capture mono 16-bit 48 kHz, asynchronous, EP 0x83, 96
       bytes, fixed size. Selector units 7 and 8 between the feature units and the output
@@ -48,15 +48,16 @@ unchecked; the cable for section 5 arrived 2026-10-13.
       `fullSpeed48k`).
 - [x] `tests/usb/uac1_test.cpp` runs discovery against this fixture and the custom-firmware
       one under the sanitizers.
-- [ ] Which endpoints advertise the sampling-frequency control: read it off the parse and
-      fill `rate_control`.
+- [x] Sampling-frequency control: neither endpoint advertises it (CS endpoint attributes 0x00
+      on OUT 0x03 and IN 0x83), so the pedal sends no rate request; the device is one-rate.
 
 ## 2. Discovery on the pedal
 
 - [x] 2026-10-10: UAC2 declines, UAC1 adopts; capture is channel 0 through the generic frame
       loop.
 - [x] Live configuration descriptor byte-identical to the fixture.
-- [ ] Rate request outcome and feature-unit requests: not recorded on the sheet yet; read the
+- [x] Rate request: not sent (no control bit on either endpoint).
+- [ ] Feature-unit unmute and 0 dB requests: outcome not recorded on the sheet yet; read the
       first-light log.
 - [x] Pacing: frame cadence (adaptive OUT with no feedback endpoint; asynchronous IN but fixed
       at 48 frames, so no rate information crosses the bus either way).

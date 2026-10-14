@@ -64,7 +64,7 @@ repository):
 
 ## The MOMIX CAB, stock firmware, dumped live (2026-10-09)
 
-`momix-cab-stock-fw-usb-dump.txt` is the parse; the raw 215-byte configuration is
+The parse is the appendix at the end of this file; the raw 215-byte configuration is
 `tests/usb/momix-cab-stock-fw-configuration.bin` and `npm test` runs UAC1 discovery against it.
 What the factory firmware presents, against Rob's custom firmware:
 
