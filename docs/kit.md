@@ -121,6 +121,25 @@ The kit's own dev board shipped with the WROOM module's two antenna-selection le
 radio joins the main network from the carrier unaided. Check this first on any module that
 hears the gateway far worse than a laptop beside it.
 
+## The audio module (decision 2026-10-13)
+
+The kit's audio module (PCM5100 DAC feeding a PAM8403 class-D amp, 15-pin socketed board on
+BCK 42, LCK 14, DIN 41) is cruft for the pedal as it stands: the audio path is USB in and USB
+out through the interface, on the interface's clock. The speakers are already pulled, the amp
+output is speaker-level and not headphone-safe, and the socket carries only the I2S lines,
+power and the amp outputs: the DAC-to-amp line-level signal lives on the module's own copper,
+so no combination of socket pins yields a clean audio path. It stays plugged in anyway: it
+costs no pin the carrier or the display plan wants, the ES8311 stopgap fails over it harmlessly
+at boot, and it is the only hardware track D (codec-less I2S DAC binding) could ever drive.
+
+If a monitor output is wanted later: replace the module with a PCM5102A breakout (the
+five-dollar kind with a 3.5 mm jack), same three I2S signals, master clock grounded so it runs
+from its internal PLL, ground-centred line output around 2 V RMS. Tapping the PCM5100's output
+pads before the amp gives the same result for fiddlier soldering; a separate line amp adds
+nothing. Either way it is monitor grade: an I2S DAC runs on the ESP32's clock while the real
+audio path runs on the interface's clock, and the pedal does not resample. Good for auditioning
+presets and menu sounds; the recorded output stays the interface.
+
 ## Boards on hand (2026-10-09)
 
 "AMOLED" in the pedal's docs means the Waveshare ESP32-S3-Touch-AMOLED-2.06, the upstream

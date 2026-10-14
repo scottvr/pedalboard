@@ -39,6 +39,8 @@ with `gh repo clone scottvr/<name>`, which adds the `upstream` remote.  When the
   to flash it from the pedal.
 - `docs/wifi.md`: joining the maintenance network, finding by finding.
 - `docs/build-environment.md`: ESP-IDF on this Mac, the aliases, the fork bench workflow.
+- `docs/p4.md`: the project after the kit, NAM on an ESP32-P4: what the chip changes, where
+  Geastack stands on it, the boards on hand and to buy, the courtesy question for upstream.
 - `docs/sources.md`: everything read on the way.
 
 ## Status

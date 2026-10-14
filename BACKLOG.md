@@ -34,8 +34,10 @@ Wi-Fi tail (one bench visit):
 1. Done 2026-10-12: the main-network join (see Done). External antennas arrive 2026-10-13;
    the SMA path makes the carrier socket irrelevant to the radio.
 2. `effects-profile` over the API: per-effect cost on this board (both cores sit at 87%).
-3. When the 1/4" to 1/8" cable arrives: loopback glitch count and the drift experiment
-   (`docs/momix.md` "MOMIX drift", `docs/usb-audio.md` "Per-device timing"). Keep the input below full scale.
+3. Cable arrived 2026-10-13 (TRS 1/4" to 1/8"): loopback glitch count and the drift experiment
+   (`docs/momix.md` "MOMIX drift", `docs/usb-audio.md` "Per-device timing"). Keep the input below
+   full scale. The glitch counter (`AUDIO TRY` option, backlog) is not written yet; write and
+   host-test it before the bench visit, or run the first pass with the host-side counters alone.
 
 Display (tracks B and C below, then the bench):
 
@@ -88,6 +90,9 @@ them with the command in `docs/build-environment.md`. Design: `docs/display.md`.
   MOMIX from the pedal"). Prerequisite: the manual breakout + jl-uboot-tool route proven once.
 - Hide the speaker control when the board's codec init fails (verify the binding already does).
 - Remove the ES8311 stopgap from the LAFVIN definition once track A lands.
+- Ask upstream to rename `tools/esp32/amoled_remote.py`: its messages already say "CoyoPedal"
+  on any board (fork commit `7b81d9c`) and its discovery match was never board-specific; only
+  the file name lags. Low priority, easy ask alongside the UAC1 PR.
 - Runtime Wi-Fi provisioning over Improv Serial (`docs/wifi.md`), own branch:
   credentials to NVS, compiled header as fallback, the API token stays compiled until the
   device can generate and reveal one.
@@ -98,6 +103,24 @@ them with the command in `docs/build-environment.md`. Design: `docs/display.md`.
   key wiggle, VBUS and ground from the Mac, backup with jl-uboot-tool, then Rob's
   `flash/jl_692x.bin`. Only needed if the MOMIX headphone jack becomes the pedal's output.
 - Choose the pedal's audio output on the kit: the PCM5100 module (track D) or an external DAC.
+- Kit audio module (PCM5100 DAC + PAM8403 amp on GPIO 42, 14, 41): decided 2026-10-13 to
+  leave it plugged in and ignore it until after the display's first light. It is cruft for the
+  USB-in, USB-out pedal, costs no pin anyone wants, and is the only hardware track D could
+  drive. If a monitor jack is wanted: a PCM5102A breakout with a 3.5 mm jack on the same three
+  I2S lines (`docs/kit.md`, "The audio module").
+- Waveshare ESP32-S3-Touch-LCD-4.3B ordered 2026-10-12, arrives 2026-10-15 (track F): first
+  light of the composed definition, then the gift PR goes up verified.
+- Two Waveshare ESP32-P4 boards arrived 2026-10-13: an ESP32-P4-WIFI6-POE-ETH (ES8311 codec,
+  Ethernet with PoE, C6 with an IPEX antenna) and an ESP32-P4-Module-DEV-KIT (four USB-A ports,
+  Ethernet). Both panel-less, both in `docs/p4.md`. They belong to the next project, below.
+
+### Next project: NAM on the ESP32-P4 (`docs/p4.md`)
+
+Starts after the kit's display and the gift PR. Before any code, ask the maintainer the
+courtesy question written in `docs/p4.md` (he has P4 work he is keeping closed). First
+milestone: a Gea P4 target's first real run on a board on hand, with the C6 Wi-Fi link up.
+The pedal-port board is the POE-ETH on hand: its ES8311 is the pedal's codec, so the headless
+boot needs no further purchase; a DSI panel board is optional, later.
 - Decide whether the camera stays once two of its pins carry the panel.
 
 ### Upstream coyopedal (after hardware results)

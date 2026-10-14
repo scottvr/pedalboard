@@ -93,6 +93,11 @@ device is invisible to the host; only the loopback test below can see it.
    branch's maintenance log dumps it, or `lsusb -v`), and ask whether he wants to test, with a
    plain account of the streaming and latency state. For that test the fork needs a switch
    that routes the HD 2 through the generic path instead of the VID:PID profile.
+   Status 2026-10-12: the author was pointed at this repository and asked for the dump; he
+   did not answer that part. He mentioned his iRig HD X runs a custom firmware. The "192/384"
+   in the HD X fixture are bytes per packet (48 frames per ms, 16-bit stereo in, 32-bit stereo
+   out), not kilohertz; 192 kHz stereo 24-bit would need 1,152 bytes per Full Speed frame,
+   above the 1,023 limit. The HD 2 request goes back on the list for the UAC1 outreach.
 4. **Device-side contract for hackable interfaces**, to document: expose the real clock
    (variable-size IN packets or a feedback endpoint) or lock the audio clock to USB SOF;
    48 kHz; 1 ms packets of at least 48 frames; one clock for both directions. The MOMIX fix
