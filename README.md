@@ -62,7 +62,9 @@ with `gh repo clone scottvr/<name>`, which adds the `upstream` remote.  When the
   four-way handshake unanswered until WPA3 was compiled in (commit `e6dc162`; see `docs/wifi.md`). The main-network test with that build is the next bench item.
 - Track F, the Waveshare ESP32-S3-Touch-LCD-4.3B composed board for `@geastack/targets`, ran
   on the board on 2026-10-15: panel and touch controller up on the first boot, the counter
-  starter rendering and counting under touch. Verified; the PR is next (`docs/waveshare-43b.md`).
+  starter rendering and counting under touch, and on 2026-10-16 its microSD slot mounting over
+  SPI through a second composed-board change (track G). Both verified; the PRs are next
+  (`docs/waveshare-43b.md`).
 - The working list is `BACKLOG.md`: current sprint, upstream tracks, backlog,
   done log.
 - Rob Murru's custom MOMIX firmware is only needed when the MOMIX headphone jack is the

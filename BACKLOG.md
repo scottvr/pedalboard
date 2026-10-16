@@ -40,6 +40,13 @@ Wi-Fi tail (one bench visit):
    `7f3cbcb`), host-tested; it also measures the round-trip latency and the drift. First
    hardware run is this item.
 
+The 4.3B as a pedal home (decided 2026-10-16, after the gift ran):
+
+8. Track G, SPI microSD, first: done 2026-10-16 (see Done). Then the pedal on the 4.3B
+   with an ES8311 stopgap on free GPIOs (as on the kit, it fails forward), the panel
+   scanning, and `effects-profile` plus the loopback counter to measure what the RGB panel's
+   PSRAM traffic costs NAM before deciding the son-in-law build.
+
 Display (tracks B and C below, then the bench):
 
 4. Hardware mod. Pins 0, 19 and 20 were lifted before the 2026-10-10 first-light runs (the
@@ -73,6 +80,7 @@ PRs go first because the pedal's board definition depends on them. State as of 2
 | D     | Codec-less I2S DAC binding for the PCM5100 (I2S half of the ES8311 binding without the codec-dev calls); only if the kit's speakers become the monitor path                                                                                    | targets, chips      | not started | no              |     |
 | E     | Ask whether the LAFVIN target belongs in `@geastack/targets` once B and C are in                                                                                                                                                               | targets             |             |                 |     |
 | F     | Waveshare ESP32-S3-Touch-LCD-4.3B as a composed board: the 7-inch definition's panel electronics with the B's notes (RS485 on UART0, CAN, isolated I/O, RTC, charger), a `build-config.json` entry and a board page; a small gift PR, asked about by someone on his side (`docs/waveshare-43b.md`) | targets             | `waveshare-touch-lcd-4.3b` (rebased on upstream `9546973`) | yes, 2026-10-15: panel, touch by hand, counter runs | to open |
+| G     | SPI microSD for composed boards: the composer takes `storage.microSD.interface: "spi"` (MOSI, MISO, SCK, chip-select on a GPIO or an expander line), the base's card mount gains the SDSPI path, declared on the 4.3B and the 7-inch (same wiring). Second gift; the pedal needs it to boot on the 4.3B (`docs/waveshare-43b.md`) | cli, targets        | `composed-spi-microsd` (targets stacked on the gift branch) | yes, 2026-10-16: card mounts over SPI2 with the select on EXIO4, push and list verified | to open, after the gift PR |
 
 Each fork is a sibling clone on branch `lafvin-composed-display`; the pedal builds against
 them with the command in `docs/build-environment.md`. Design: `docs/display.md`.
@@ -183,3 +191,8 @@ boot needs no further purchase; a DSI panel board is optional, later.
   added, the counter starter built on upstream's published stack, flashed over the native USB
   port, panel and GT911 up on the first boot, counter rendered at 800x480 and counting on
   injected taps and on fingers (`docs/waveshare-43b.md`). Only the PR remains.
+- 2026-10-16: the gift branch rebuilt and reflashed on upstream's current main, same result.
+  Track G written and verified the same day: the composer takes a microSD slot on SPI with
+  the chip-select on a GPIO or an expander line, the base mounts it through the SDSPI host,
+  the 4.3B and 7-inch definitions declare theirs; a file pushed over USB to the 4.3B's card
+  and listed back (`docs/waveshare-43b.md`, "Track G"). Sprint item 8's first step is done.

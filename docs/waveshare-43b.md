@@ -3,7 +3,7 @@
 A composed-board definition for `@geastack/targets`. I *thought* this was the board an Issue in @dashersw/coyopedal had mentioned, and left a comment on that Issue explaining why what they were trying wouldn't work, though it turned out the were actually using the P4 equivalent to this board.
 
 Anyway, since we noticed there was already support for the 7" sibling to this board, 
-(and we now have both the S3 and P4 versions of this kiti), we wanted to send this easy win composition as a sort of gift and as an introduction to the other PRs forthcoming (in @geastack and the @dashersw/coyopedal trees) in related to the work of getting coyopedal onto a LAVFIN board that was around and unused.
+(and we now have both the S3 and P4 versions of this kit), we wanted to send this easy win composition as a sort of gift and as an introduction to the other PRs forthcoming (in @geastack and the @dashersw/coyopedal trees) in related to the work of getting coyopedal onto a LAVFIN board that was around and unused.
 
 Verified against the board 2026-10-15. The point of the track is a small, clean PR against upstream's own stack.
 
@@ -71,6 +71,10 @@ working directory drifts between parallel commands.
   twenty seconds against a checkout).
 - The ratio-1 image (with the `build-config.json` entry) boots the same, 2.2 MB, and the
   screenshot's content centre moves to (427, 268): the 28 px padding offset, as predicted.
+- Rebuilt and reflashed on 2026-10-16 after the branch was brought up to upstream's current
+  main (`b5a6a28`, four commits on from the rebase, including the component-solving change to
+  the base target): same boot, same panel and touch lines, 2.2 MB. The PR's verification claim
+  holds for the tree he will merge.
 - Nothing in the definition needed changing after hardware. What the B adds off the panel
   (RS485, CAN, isolated I/O, RTC, charger) stays undescribed by design: the composer has no
   roles for them.
@@ -90,3 +94,55 @@ working directory drifts between parallel commands.
 ## Not verified
 
 - Wi-Fi, OTA, the microSD slot (SPI, not declared), audio (none on the board).
+
+## Track G: the card slot on SPI (2026-10-16)
+
+The pedal loads every model from the card, and the 4.3B's slot is SPI (MOSI 11, SCK 12,
+MISO 13) with the chip-select on the CH422G's EXIO4; the composer knew only SD_MMC 1-bit and
+the base mounted only through the SDMMC host, so the pedal could not have booted on the
+board. The second gift, two repositories, branch `composed-spi-microsd` in each (worktrees
+`cli-spi-sd/` off upstream main and `targets-spi-sd/` off upstream main plus the gift
+commit, so the 4.3B definition exists to declare the slot on):
+
+- CLI, `src/boards/custom-target.mjs`: `storage.microSD.interface` takes `spi` beside
+  `sdmmc-1bit`: `spiHost` (`spi2`/`spi3`), `maxFreqKhz` (400 to 40000, default 20000), pins
+  `mosi`/`miso`/`sck`, and one select line, either `pins.cs` (a GPIO) or
+  `chips.expander.outputs.cardSelect`. Both or neither is an error, as is a `cardSelect` with
+  no storage. The header gains `GEA_BOARD_MICROSD_SPI`, an `SdSpiConfig storageSpi` constant
+  and a `cardSelect` member on `IoExpanderConfig`; the SD_MMC constants stay (the base checks
+  them for NC). The CMake fragment names the interface and asks for `esp_driver_sdspi` and
+  `esp_driver_spi`. Tested in `test/boards.test.mjs` (header, CMake, the error cases, a lane
+  clash); the setup guide's composed-targets section documents the role.
+- targets, the base's `sdcard_mount.cpp`: a `GEA_BOARD_MICROSD_SPI` branch that holds the
+  expander's select line low, brings the SPI bus up (tolerating a bus a panel already
+  initialised, for the ST7789 boards where the card may share SPI2), and mounts through
+  `esp_vfs_fat_sdspi_mount` with `SDSPI_SLOT_NO_CS` when the select is on the expander. The
+  4.3B and the 7-inch definitions declare the slot and `cardSelect: 4`; the board page says so.
+
+Why the select line is held low rather than toggled: the card is the only device on that
+bus, and Waveshare's own ESP-IDF demo for the family (`03_SD_Test`, `sd_card.c`) writes the
+CH422G output latch with EXIO4 low and hands the SDSPI slot `CONFIG_EXAMPLE_PIN_CS=-1`, on
+SPI2 at the default 20 MHz with `max_transfer_sz` 4000. The ESP-IDF driver supports it
+explicitly (`SDSPI_SLOT_NO_CS`).
+
+What this does not cover: the pedal mounts the card itself in `src/native/storage/sd_models.cpp`
+through the SDMMC host, reading `board::storage.clk` and friends, because it unmounts and
+remounts to rescan. For the pedal on the 4.3B that file gains the same SPI branch keyed on
+`GEA_BOARD_MICROSD_SPI`, in the pedal fork, after this track lands.
+
+Verification: `gea devctl push <file> /sdcard/<name>` over USB triggers the lazy mount from any
+app, so the counter starter serves; the log line to look for is `mounted /sdcard (SDSPI)`.
+Two things about that path, learned 2026-10-16 on the empty slot: the base attempts the mount
+once per boot and caches a failure, so insert the card and reset before testing; and the CLI
+swallows the device's log lines during a push, so the mount's own lines (`mounting /sdcard
+SDSPI host=1 mosi=11 miso=13 sck=12 cs=-1 20000 kHz`, then the result) are only seen by
+driving `GEADEV PUSH` from a serial script. With no card: the expander asserts EXIO4 without
+error, the bus comes up, `sdmmc_card_init` times out (0x107) and the push answers
+`no-storage`. The counter image with the SDSPI host is 84 KB larger (0x232c80 bytes).
+
+Verified 2026-10-16 with a FAT32 card in the slot: reset, `GEADEV PUSH /sdcard/hello.txt 60
+<crc>` answers `PUSH READY` after `mounting /sdcard SDSPI host=1 mosi=11 miso=13 sck=12 cs=-1
+20000 kHz` and `mounted /sdcard (SDSPI)` (300 ms from attempt to mount), then `PUSH OK` with the
+CRC matched; `GEADEV LS /sdcard` lists the file at 60 bytes beside the Mac's Spotlight
+folders. Both gifts have now run on the board; both branches wait on the user's commit and
+push, the targets one stacked on the gift commit until that PR merges.
