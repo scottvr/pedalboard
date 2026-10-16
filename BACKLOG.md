@@ -15,6 +15,12 @@ file; the pedal fork's branch is `lavfin-kit-notes`.
 - Work that lives outside this repo (the Geastack forks) is a **track** in the table below:
   one row per upstream change, with its fork branch, what it has run on, and its PR. That
   table is the only place that state is kept.
+- Upstream-bound changes go up one per branch. The working branches (`lavfin-kit-notes` in
+  the pedal, `lafvin-composed-display` in the Geastack forks) take every commit first; when a
+  change is ready to send, it is cut as its own branch off that upstream's main by
+  cherry-pick and opened as its own PR. A change that alters a default or turns an undefined
+  case into an error is written on its own feature branch from the start and sent with the
+  design argument in the message, after asking upstream.
 - A task handed to a subagent gets a **brief** first: goal, the files it may touch, how it is
   tested, and what "done" looks like. The brief lives under the track or sprint item it serves;
   the agent reads the topic file under `docs/` for background and writes findings back there.
@@ -42,11 +48,13 @@ Wi-Fi tail (one bench visit):
 
 The 4.3B as a pedal home (decided 2026-10-16, after the gift ran):
 
-8. Track G, SPI microSD, first: done 2026-10-16 (see Done). The pedal on the 4.3B: boots
-   (night of 2026-10-16), maintenance is the default boot without a footswitch, the panel and
-   UI run with direct PSRAM scanout at 15 fps. Left: the Mac cannot reach anything on the
-   LAN (`docs/waveshare-43b.md`, "Blocked"), then `effects-profile` with the panel scanning,
-   the number that decides the son-in-law build. Then commit the fork's changes.
+8. Track G, SPI microSD, first: done 2026-10-16 (see Done). The pedal on the 4.3B (fork
+   commits `42e125f`, `d394871`, `9f6d5b2`): boots with upstream's audio default, the NAM
+   graph misses internal RAM by about 28 KB and the pedal falls back to maintenance; panel,
+   touch, card, Wi-Fi and API up, UI at 15 fps. Next: recover the 27 KB the link maps name
+   (track A's stopgap removal 9.7 KB, track J 4.4 KB, the UI-state fragment question 5 KB),
+   then `effects-profile` with the panel scanning. The Mac needs the Local Network permission
+   for the hosting app (or sudo) to reach the pedal.
 
 Display (tracks B and C below, then the bench):
 
@@ -84,6 +92,7 @@ PRs go first because the pedal's board definition depends on them. State as of 2
 | G     | SPI microSD for composed boards: the composer takes `storage.microSD.interface: "spi"` (MOSI, MISO, SCK, chip-select on a GPIO or an expander line), the base's card mount gains the SDSPI path, declared on the 4.3B and the 7-inch (same wiring). Second gift; the pedal needs it to boot on the 4.3B (`docs/waveshare-43b.md`) | cli, targets        | `composed-spi-microsd` (targets stacked on the gift branch) | yes, 2026-10-16: card mounts over SPI2 with the select on EXIO4, push and list verified | [cli#7](https://github.com/geastack/cli/pull/7) and [targets#6](https://github.com/geastack/targets/pull/6) (sits on #5), opened 2026-10-16 |
 | H     | Source walk prunes the CLI's `.gea` state directory (fork `d107bfb`); without it any build root other than `.gea/build` fails on reconfigure with a ninja dependency cycle | targets             | on `lafvin-composed-display`; to cut as its own branch | yes, every pedal build since 2026-10-12 | |
 | I     | RGB panel binding answers `Display::flushOdometerRead`, which core's display contract declares (RGB hunk of fork `f65c525`); without it an app that reads the odometer fails to link | targets             | on `lafvin-composed-display`; to cut as its own branch | yes, 2026-10-16 on the 4.3B | |
+| J     | GT911 binding honours `GEA_EMBEDDED_TOUCH_TASK_STACK_EXTERNAL` like the FT3168 binding (4.4 KB of internal RAM on the 4.3B pedal, `docs/waveshare-43b.md` "Third boot") | targets             | not started | | |
 
 Each fork is a sibling clone on branch `lafvin-composed-display`; the pedal builds against
 them with the command in `docs/build-environment.md`. Design: `docs/display.md`.
@@ -139,12 +148,19 @@ milestone: a Gea P4 target's first real run on a board on hand, with the C6 Wi-F
 The pedal-port board is the POE-ETH on hand: its ES8311 is the pedal's codec, so the headless
 boot needs no further purchase; a DSI panel board is optional, later.
 - Decide whether the camera stays once two of its pins carry the panel.
+- 4.3B footswitch: wire a stomp switch to the isolated DI0 and test whether the CH422G
+  reports it with EXIO0 latched high (`initialOutputs` 0x1f) while the other lines stay
+  outputs; if not, a soldered GPIO or a second I2C expander on the I2C terminal.
 
 ### Upstream coyopedal (after hardware results)
 
 - Outreach to the author (sequence in `docs/audio/usb-audio.md`, "iRig HD 2 profile retirement"), then the UAC1 PR
   with a hardware-testing statement, README board table, `docs/USB_AUDIO.md`, skill updates.
 - WPA3 commit `e6dc162` goes in the same conversation; its message is written to be the PR text.
+- From the 4.3B work (`docs/waveshare-43b.md`): the status NaN fix (fork `42e125f`), the
+  footswitch as a board-block setting, and the question of an explicit API-only build for a
+  headless, switchless pedal that boots into maintenance (the matrix in "The footswitch
+  decision"); raise the last as a question, not a change.
 
 ### Docs and tooling
 

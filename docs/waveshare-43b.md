@@ -320,3 +320,64 @@ asked; a board whose first boot is maintenance answers its very first status tha
 Fix in the fork, `remote_service.cpp`: when the magic is wrong at the maintenance-boot report,
 zero the struct once; `valid` stays false and every field is 0. Independent of the board; one
 of the small pedal PRs.
+
+### The footswitch decision, revisited with the user (2026-10-16, morning)
+
+The overnight change inferred "no footswitch" from the board layer's launcher button being
+absent and made maintenance the default boot in that case. Both parts were wrong in
+principle, as the user pointed out: a pedal is a stomp box first, the footswitch is its
+primary interface once a preset is chosen, and the boot default is an explicit upstream
+design decision ("the same firmware builds for a bare module with no panel ... and the BOOT
+button is the footswitch") that a fork should not change without discussing it.
+
+What stays, because the 4.3B forces it: the footswitch pin is the board block's decision in
+`package.json`. `COYOPEDAL_FOOTSWITCH_GPIO` names the pin, `COYOPEDAL_FOOTSWITCH_NONE` says
+the board has none, and without either the board's launcher button is the footswitch, BOOT
+on every reference board. A board with no launcher button and no setting fails to compile
+with a message naming the two, so a pedal cannot lose its stomp switch by omission. The boot
+default is upstream's again: audio, with the Setup screen's "Maintenance mode" control and
+a footswitch hold as the ways back. The 4.3B block says `NONE` until a switch is wired.
+
+Discussed and parked, not coded:
+
+- The matrix. Audio is the right default whenever the pedal has a way back, a footswitch or
+  a screen; the only stranded configuration is headless and switchless, which could be an
+  explicit "API-only" build that boots into maintenance, is configured over the API, and is
+  sent to audio with `audio-mode` until the next power-cycle. Plausible for a maker whose
+  enclosure gives no access to BOOT. A question for the maintainer, not a fork change.
+- An expander-input footswitch on the 4.3B's isolated DI0. Not viable as the chip is driven
+  today: the CH422G switches direction for all eight IO pins at once, and with outputs
+  enabled (backlight, both resets, the card-select) a read returns the driven levels, not
+  the optocoupler's. Reading DI0 would float the panel reset and the card-select on every
+  poll. One bench experiment may change that: latch EXIO0 high instead of low
+  (`initialOutputs` 0x1f) and see whether a closed dry contact reads back low through the
+  optocoupler's series resistor, which is presumably how the vendor's own demos read it.
+  Needs a wired switch. Until then the 4.3B footswitch is a soldered GPIO (6 is free, if the
+  module pad is reachable) or a second I2C expander on the I2C terminal.
+
+### Third boot: upstream's audio default, and where the internal RAM goes (2026-10-16, 10:30)
+
+With the boot default restored, the first boot goes to audio and tries to place the NAM
+graph: every factory profile is rejected (`S3 runtime alloc failed rl8=0/30344 free=52952
+largest=26624`, thirteen history rings of 2 to 5 KB unallocated), then `Audio could not
+start; maintenance available for recovery`: the pedal falls back to maintenance by itself,
+the panel, touch, card, Wi-Fi and API come up as before. So upstream already handles the
+switchless failure path, and the fallback is the real safety net, not the boot default.
+
+The shortfall is about 28 KB, and the link maps (`esp_idf_size --files` on both images) put
+the 4.3B image 27,362 bytes of static internal RAM above the kit's (DIRAM 215,793 against
+187,901; 125,967 left for the heap against 153,859). Where:
+
+| Growth | Object | Why | Remedy |
+| ---: | --- | --- | --- |
+| 9,656 | `audio_runtime.cpp` (framework host) | the framework's audio task stack, static; compiled only because the board declares an audio chip, the ES8311 stopgap | track A removes the stopgap and this with it |
+| 4,977 | the generated UI object | the shipped `gea_ui_state_external.lf` moves "the display, runtime and tree_render objects of the app's main component" by name; the new compiler emits one hashed object the fragment does not catch | a fragment or compiler question for upstream |
+| 4,363 | `gt911.cpp` | a static task stack and controller object; the FT3168 binding honours `GEA_EMBEDDED_TOUCH_TASK_STACK_EXTERNAL`, this one does not | a small targets PR: the GT911 binding takes the same switch |
+| 3,648 | `canvas.cpp` (engine) | engine 0.1.17 against the kit's 0.1.10 | none; version cost |
+| 3,886 | `rgb_panel.cpp`, `esp_lcd_panel_rgb.c`, `gdma_link.c`, SPI | the RGB path's driver state | small and legitimate |
+
+The RGB panel's framebuffers are in PSRAM and are not in this list. Recovering the first
+three rows (19 KB) plus fragmentation relief may be enough; the stopgap's 9.7 KB alone is
+the largest single item and is exactly what track A was for. The pedal fork's three commits
+of the morning: the status NaN fix, the footswitch as a board-block setting, and the 4.3B
+board support, each with its own message.
