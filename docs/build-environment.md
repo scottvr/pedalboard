@@ -62,6 +62,13 @@ headless image before flashing the bench board. A clean build on this Mac is abo
 minutes the first time (every IDF component is compiled; the configure alone is twenty-five on
 the spinning disk) and a few minutes after that.
 
+## The 4.3B gift bench
+
+Track F is built apart from the pedal, on upstream's published packages: a worktree of the
+targets fork (`targets-4.3b/`), a worktree of core at upstream main (`core-main/`) and a
+scaffolded counter app in `tmp/counter-43b/`; the command and the pitfalls (a `node_modules`
+inside the targets root hangs the CLI's board resolution) are in `docs/waveshare-43b.md`.
+
 ## Saving images
 
 Every build worth flashing again is filed with `tools/save-image.sh <alias> <tag> [build-root]`

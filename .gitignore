@@ -5,3 +5,6 @@ targets/
 core/
 .DS_Store
 tmp/
+targets-4.3b/
+core-main/
+targets-4.3b-node_modules.off/

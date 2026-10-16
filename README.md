@@ -42,6 +42,8 @@ with `gh repo clone scottvr/<name>`, which adds the `upstream` remote.  When the
   matter so a table can be generated from them later.
 - `docs/wifi.md`: joining the maintenance network, finding by finding.
 - `docs/build-environment.md`: ESP-IDF on this Mac, the aliases, the fork bench workflow.
+- `docs/waveshare-43b.md`: the Waveshare 4.3B gift definition for Geastack (track F): the
+  branch, the bench apart from the pedal, and what the board's first run showed.
 - `docs/p4.md`: the project after the kit, NAM on an ESP32-P4: what the chip changes, where
   Geastack stands on it, the boards on hand and to buy, the courtesy question for upstream.
 - `docs/sources.md`: everything read on the way.
@@ -58,6 +60,9 @@ with `gh repo clone scottvr/<name>`, which adds the `upstream` remote.  When the
   in `BACKLOG.md` ("Upstream tracks") before they can be used. The design is in `docs/display.md`.
 - Maintenance mode over Wi-Fi: the AT&T gateway runs WPA2/WPA3 transition mode and left the
   four-way handshake unanswered until WPA3 was compiled in (commit `e6dc162`; see `docs/wifi.md`). The main-network test with that build is the next bench item.
+- Track F, the Waveshare ESP32-S3-Touch-LCD-4.3B composed board for `@geastack/targets`, ran
+  on the board on 2026-10-15: panel and touch controller up on the first boot, the counter
+  starter rendering and counting under touch. Verified; the PR is next (`docs/waveshare-43b.md`).
 - The working list is `BACKLOG.md`: current sprint, upstream tracks, backlog,
   done log.
 - Rob Murru's custom MOMIX firmware is only needed when the MOMIX headphone jack is the

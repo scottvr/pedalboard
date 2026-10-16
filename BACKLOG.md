@@ -72,7 +72,7 @@ PRs go first because the pedal's board definition depends on them. State as of 2
 | C     | FT6336 touch adapter in the chips catalog; the binding gains the Touchscreen surface (`ft6336_touchscreen.cpp`), viewport mapping and the audio task-priority rule; the base's touch gate already admits any non-FT3168 driver                | chips, targets      | `lafvin-composed-display`: targets ca3372d, core 14f08ad | builds, not flashed |     |
 | D     | Codec-less I2S DAC binding for the PCM5100 (I2S half of the ES8311 binding without the codec-dev calls); only if the kit's speakers become the monitor path                                                                                    | targets, chips      | not started | no              |     |
 | E     | Ask whether the LAFVIN target belongs in `@geastack/targets` once B and C are in                                                                                                                                                               | targets             |             |                 |     |
-| F     | Waveshare ESP32-S3-Touch-LCD-4.3B as a composed board: the 7-inch definition's panel electronics with the B's notes (RS485 on UART0, CAN, isolated I/O, RTC, charger); a small gift PR, asked about by someone on his side                       | targets             | `waveshare-touch-lcd-4.3b` (off upstream main) | not yet; board arrives 2026-10-15 |     |
+| F     | Waveshare ESP32-S3-Touch-LCD-4.3B as a composed board: the 7-inch definition's panel electronics with the B's notes (RS485 on UART0, CAN, isolated I/O, RTC, charger), a `build-config.json` entry and a board page; a small gift PR, asked about by someone on his side (`docs/waveshare-43b.md`) | targets             | `waveshare-touch-lcd-4.3b` (rebased on upstream `9546973`) | yes, 2026-10-15: panel, touch by hand, counter runs | to open |
 
 Each fork is a sibling clone on branch `lafvin-composed-display`; the pedal builds against
 them with the command in `docs/build-environment.md`. Design: `docs/display.md`.
@@ -114,8 +114,8 @@ them with the command in `docs/build-environment.md`. Design: `docs/display.md`.
   USB-in, USB-out pedal, costs no pin anyone wants, and is the only hardware track D could
   drive. If a monitor jack is wanted: a PCM5102A breakout with a 3.5 mm jack on the same three
   I2S lines (`docs/kit.md`, "The audio module").
-- Waveshare ESP32-S3-Touch-LCD-4.3B ordered 2026-10-12, arrives 2026-10-15 (track F): first
-  light of the composed definition, then the gift PR goes up verified.
+- Track F: open the gift PR against geastack/targets (`docs/waveshare-43b.md`); the branch
+  is verified and pushed.
 - Two Waveshare ESP32-P4 boards arrived 2026-10-13: an ESP32-P4-WIFI6-POE-ETH (ES8311 codec,
   Ethernet with PoE, C6 with an IPEX antenna) and an ESP32-P4-Module-DEV-KIT (four USB-A ports,
   Ethernet). Both panel-less, both in `docs/p4.md`. They belong to the next project, below.
@@ -178,3 +178,8 @@ boot needs no further purchase; a DSI panel board is optional, later.
   Confirmed: unaided join from the carrier on the first try, OTA round trip validated and
   rebooted into the new slot. Sprint "Wi-Fi tail" item 1 closed. Diagnostics removed from the
   source afterwards (the images remain in `images/`).
+- 2026-10-15: the Waveshare ESP32-S3-Touch-LCD-4.3B arrived and track F ran on it the same
+  day: the gift branch rebased on upstream main, a `build-config.json` entry and a board page
+  added, the counter starter built on upstream's published stack, flashed over the native USB
+  port, panel and GT911 up on the first boot, counter rendered at 800x480 and counting on
+  injected taps and on fingers (`docs/waveshare-43b.md`). Only the PR remains.
