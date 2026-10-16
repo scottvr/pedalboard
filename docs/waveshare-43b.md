@@ -146,3 +146,177 @@ Verified 2026-10-16 with a FAT32 card in the slot: reset, `GEADEV PUSH /sdcard/h
 CRC matched; `GEADEV LS /sdcard` lists the file at 60 bytes beside the Mac's Spotlight
 folders. Both gifts have now run on the board; both branches wait on the user's commit and
 push, the targets one stacked on the gift commit until that PR merges.
+
+## The pedal on the 4.3B (started 2026-10-16, overnight)
+
+Sprint item 8's second step, in the pedal fork (branch `lavfin-kit-notes`), built against the
+track G branches and the published framework stack:
+
+- `boards/esp32-s3-waveshare-touch-lcd-4.3b.json`: the shipped composed definition plus what
+  the pedal needs and the gift must not carry: an ES8311 stopgap on GPIO 6, 15, 16, 43 and 44
+  (free, CAN, and the RS485 pair, none of them a console here), no launcher button, the SPI
+  card slot as upstream declares it. Alias `lcd43b` in `.gea/boards.json`, serial
+  `44:1B:F6:C8:B0:4C`.
+- `package.json`: a 16 MB partition table for the target (the kit's display layout), a board
+  block with `cssDevicePixelRatio` 1 and the 800x480 defines, `GEA_BOARD_HAS_POWER` 0 and the
+  gateway's WPA3 compatibility opt-out, and `esp_driver_sdspi` plus `esp_driver_spi` in the
+  component requires.
+- `src/native/storage/sd_models.cpp`: the pedal mounts the card itself (it unmounts and
+  remounts to rescan), so it gains the same `GEA_BOARD_MICROSD_SPI` branch as the base: select
+  held low through the expander, SDSPI slot with no CS pin, the bus tolerated if already up.
+- `src/native/main/main.cpp`: the footswitch was hard-wired to GPIO 0 ("BOOT is a footswitch
+  on every board"). On the 4.3B GPIO 0 is RGB data6, and configuring it as an input with an
+  interrupt would take the lane from the panel. The pin now comes from the board's
+  `launcherButton`, which every board layer declares, and a board that declares none gets no
+  footswitch task. Worth sending upstream on its own: it is the honest reading of the base's
+  own convention.
+
+Build: from `coyopedal/`, the track G CLI (`cli-spi-sd/bin/gea.mjs`), `GEA_TARGETS_ROOT` at
+`targets-pedal-43b` (a detached worktree: the track G branch plus the fork's source-walk fix
+`d107bfb`, which upstream main still lacks; without it any build root other than `.gea/build`
+fails on reconfigure with ninja's "dependency cycle: gea-vite-bundle.js", exactly as on
+2026-10-12; and the RGB hunk of the fork's `f65c525`, the `Display::flushOdometerRead` the
+core contract declares and the pedal's soak task calls, without which the link fails; both
+one-file fixes are worth their own small upstream PRs), `GEA_CHIPS_DIR` at `core-main/packages/chips`, the `GEA_*_DIR` overrides at
+`tmp/counter-43b/node_modules/@geastack` (compiler 1.0.33, core 0.1.42, engine 0.1.17, host
+0.1.17: the stack upstream targets now pins), `GEA_PROJECT_BUILD_ROOT` absolute at
+`.gea/build-43b`. The kit's `build/pedalboard.bin` was copied to
+`build/pedalboard-lafvin-before-43b.bin` first, since every alias writes the same file.
+
+What the board changes for the pedal, before any measurement:
+
+- The native USB-C port is the console and, in audio mode, the host port. The pedal's
+  reference board (the AMOLED 2.06) has the same arrangement, so the firmware already treats
+  the console as something that disappears: panics are recorded in RTC memory and reported on
+  the next boot, and an audio boot is "a bounded window, not a destination": a return timer
+  armed first thing brings the board back to maintenance whether or not the host, the engine
+  or the UI came up. Maintenance mode is the Wi-Fi link, discovery and the HTTP API, with the
+  console back on USB. Flashing a board that is in audio mode needs BOOT held through the
+  reset.
+- No footswitch until one is wired. Tap and hold come from the panel and the API. And the
+  boot rule had to change with it: the return-to-maintenance timer exists only for an
+  explicitly requested audio window, so a plain audio boot is permanent, and on the kit the
+  way out was holding BOOT. A board without a footswitch now boots into maintenance unless
+  audio was explicitly asked for (`main.cpp`, the boot decision); audio comes as the API's
+  bounded windows (`effects-profile`, `effects-soak`, `AUDIO TRY`) and `AUDIO MODE`.
+- `.nam` filenames longer than 8.3 depend on the pedal's own FatFS long-name setting, which is
+  the pedal's sdkconfig, not the board's.
+
+Plan for the night: flash, watch the first audio window on the console until the host takes
+the port, wait for the return to maintenance, `amoled_remote.py discover` and `status`, then
+`effects-profile`: each effect alone and the six-effect chain, with the RGB panel scanning
+the whole time. That number against the kit's 87% is the decision for the son-in-law build.
+
+### First boot of the pedal on the 4.3B (2026-10-16, 08:20)
+
+Built on the third try (the two failures were the fork's own known upstream gaps: the source
+walk's `.gea` pruning and the RGB binding's flush odometer, both now stacked on the throwaway
+worktree `targets-pedal-43b/`), 3.33 MB, 21% of the 4 MB slot free. Flashed over the native
+port. The boot log, in order:
+
+- `no footswitch on this board: tap and hold come from the panel and the API`, then
+  `maintenance is the default boot`: the new rule works. The effects arena (35,520 bytes) and
+  64 KB of the NAM bank arena are lent to the maintenance heap.
+- The remote API comes up on port 8080, the station associates in 4 s and has
+  `192.168.1.122` by 6.5 s, WPA2-PSK, RSSI -49 (the compatibility-mode opt-out carried over
+  from the kit). UDP discovery did not reach it from the Mac; `--host` works.
+- `BLE discovery startup failed`: the pedal built with `ble=0` on this board (the app
+  capabilities line), so no BLE controller. Not investigated yet; the Wi-Fi link is the one
+  that matters.
+- The CH422G comes up, then the panel does not: `lcd_rgb_panel_alloc_frame_buffers: no mem
+  for bounce buffer`, `Gea bring-up failed; the UI will not start (the app's own tasks keep
+  running)`. The internal heap at init is 13 + 5 + 21 + 32 KiB, about 71 KiB in four pieces,
+  and the RGB binding's bounce buffers are two blocks of 800 x 20 x 2 bytes, 32 KB each, in
+  DMA-capable internal RAM. The counter starter had the whole chip; the pedal's link-time
+  arenas own most of it (`docs/MEMORY.md`, "Where the internal budget goes").
+
+The binding has the knob for exactly this: `GEA_EMBEDDED_DISPLAY_RGB_BOUNCE` 0 makes the
+GDMA scan the PSRAM framebuffer directly, no internal buffers, and, in the binding's own
+words, none of the "standing ~30% CPU tax on the render core" the bounce copies cost; the
+price is scanout underrun ("visible drift") when CPU PSRAM traffic starves the DMA. For a
+NAM pedal that is the right side of the trade to try first: core 0 is where USB and stage A
+live. Set as a board define in `package.json` for the 4.3B and rebuilt.
+
+Unreachable after that boot, though: with the UI failed, the pedal associates, gets its
+address by DHCP (so the link carries traffic both ways at 4 to 6.5 s) and then answers
+nothing, not a ping right after `station ready`, not port 8080, with no disconnect in the
+log and nothing else on the console. The Mac (192.168.1.73, wired) has the right ARP entry.
+Hypothesis to test with the direct-scanout build: a pedal task that waits for the Gea runtime
+that never came starves lwIP after the failed bring-up. If the panel comes up and the
+network answers, that is the explanation; if the panel comes up and it still does not, the
+network is the next problem.
+
+### Second boot: the panel on the pedal (2026-10-16, 08:45)
+
+With `GEA_EMBEDDED_DISPLAY_RGB_BOUNCE` 0 on the board block, the same boot now continues past
+the expander: `RGB panel ready 800x480 pclk=16000000 bounce_rows=0`, `GT911 found at 0x5d`,
+the Gea runtime bootstraps, and the pedal's UI runs on the 4.3B in maintenance mode: about
+15 fps, 65 ms per frame with the display flush taking almost all of it (`disp=64.9`). The
+binding also reports `strip-raster OFF (no internal SRAM)`: the pedal leaves it no internal
+memory for that either, so flushes take the slow path. A UI at 15 fps is usable for a pedal;
+the audio-mode cost of that flush traffic is the number still to measure.
+
+Two things the pedal does differently from the counter starter, learned on the way:
+
+- It disables Gea's device control (`GEA_EMBEDDED_DEVICE_CONTROL=0`), so no `GEADEV` over the
+  USB port: no screenshots, taps or state over USB on the pedal. Those go over the pedal's
+  own HTTP API in maintenance mode.
+- The pedal's remote API is reachable only over Wi-Fi, and that is where the night stopped.
+
+### Blocked: the Mac cannot reach the pedal, or anything else on the LAN
+
+The pedal associates and gets 192.168.1.122 by DHCP on every boot, so its link carries traffic
+both ways at least until then, and the Mac's ARP table holds its MAC. But from the Mac
+(192.168.1.73, its one interface en0, Wi-Fi) nothing on 192.168.1.0/24 answers: not the pedal
+(ICMP, TCP 8080, and even a UDP `sendto` fails with "No route to host"), not the gateway at
+192.168.1.254 (no ICMP, nothing on 80 or 443), not two other hosts the ARP table knows, while
+the internet works through that same gateway (GitHub answers). `networksetup` says en0 is not
+associated with any network although it holds the address. On 2026-10-12 this Mac reached
+the kit on the same SSID, so something on the Mac's side changed. Nothing to do about it from
+the pedal, and nothing I could change on the Mac without you.
+
+The likely cause, found after the user's hint: macOS 15's per-app "Local Network" privacy
+permission. An app without it gets "No route to host" for every LAN address while internet
+traffic passes, which is this exactly; command-line tools inherit the permission of the app
+that launched them, here the app hosting the Claude Code session. Fix: System Settings,
+Privacy and Security, Local Network, switch on that app (if it is not listed, run `ping
+192.168.1.254` once in the app's own terminal to trigger the prompt). Then `amoled_remote.py
+--host 192.168.1.122 status`. The alias `lcd43b` in the pedal's `.gea/boards.json` carries
+that host. Not the Claude Code sandbox: the same probes fail with it disabled. Confirmed by
+the user the same morning: `ping 192.168.1.122` fails from the shell and answers under `sudo`
+(root is exempt from the per-app check), 160 to 280 ms round trips, the pedal's Wi-Fi power
+save. The permission switch is the real fix; sudo is the workaround for a single command.
+
+The measurement run (`effects-profile` with the panel scanning) is one command once the link
+works; the pedal is left flashed with the direct-scanout image, in maintenance mode, UI up.
+
+### Two more fork fixes upstream main lacks
+
+Both found again tonight, both one-file, both on the fork's `lafvin-composed-display` branch
+since 2026-10-12 and stacked on the throwaway worktree `targets-pedal-43b/` for the pedal
+build: `d107bfb` (the source walk prunes `.gea`, without which any non-default build root
+fails on reconfigure) and the RGB hunk of `f65c525` (the RGB binding answers
+`Display::flushOdometerRead`, without which any app that reads the odometer fails to link).
+Each is a small PR of its own; backlog tracks H and I.
+
+### State of the pedal fork after the night (uncommitted, branch `lavfin-kit-notes`)
+
+`boards/esp32-s3-waveshare-touch-lcd-4.3b.json` (new), `package.json` (partition table, board
+block with the 800x480 defines, ratio 1, WPA3 opt-out, `GEA_EMBEDDED_DISPLAY_RGB_BOUNCE` 0,
+two SDSPI components), `src/native/storage/sd_models.cpp` (SPI card branch),
+`src/native/main/main.cpp` (footswitch from the board's launcher button; maintenance is the
+default boot without one). `npm run check` and `npm test` pass. The kit's `build/pedalboard.bin`
+is restored; the 4.3B image is `build/pedalboard-43b.bin`.
+
+### A pedal bug the board exposed: `nan` in the status JSON (2026-10-16, morning)
+
+The first `status` from the 4.3B (run under sudo) was unparseable: `"drift_ppm": nan`. The
+audio-window result struct is `RTC_NOINIT_ATTR`, garbage after power-on until an audio window
+writes it, and the status renderer prints its floats with `%.2f` regardless of the struct's
+magic word (it does report `"valid": false` from that magic, but prints the fields anyway).
+Garbage float bits are routinely NaN, printf writes `nan`, and that is not JSON. The kit never
+showed it because its first boot was an audio window, which wrote the struct before anyone
+asked; a board whose first boot is maintenance answers its very first status that way.
+Fix in the fork, `remote_service.cpp`: when the magic is wrong at the maintenance-boot report,
+zero the struct once; `valid` stays false and every field is 0. Independent of the board; one
+of the small pedal PRs.

@@ -63,8 +63,11 @@ with `gh repo clone scottvr/<name>`, which adds the `upstream` remote.  When the
 - Track F, the Waveshare ESP32-S3-Touch-LCD-4.3B composed board for `@geastack/targets`, ran
   on the board on 2026-10-15: panel and touch controller up on the first boot, the counter
   starter rendering and counting under touch, and on 2026-10-16 its microSD slot mounting over
-  SPI through a second composed-board change (track G). Both verified; the PRs are next
-  (`docs/waveshare-43b.md`).
+  SPI through a second composed-board change (track G). Both verified and up as
+  PRs: geastack/targets #5 and #6, geastack/cli #7 (`docs/waveshare-43b.md`).
+- The pedal itself runs on the 4.3B since the night of 2026-10-16: maintenance boot, Wi-Fi,
+  panel and UI with direct PSRAM scanout. The audio-mode measurement waits on the Mac's LAN
+  reachability (`docs/waveshare-43b.md`).
 - The working list is `BACKLOG.md`: current sprint, upstream tracks, backlog,
   done log.
 - Rob Murru's custom MOMIX firmware is only needed when the MOMIX headphone jack is the

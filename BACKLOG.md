@@ -42,10 +42,11 @@ Wi-Fi tail (one bench visit):
 
 The 4.3B as a pedal home (decided 2026-10-16, after the gift ran):
 
-8. Track G, SPI microSD, first: done 2026-10-16 (see Done). Then the pedal on the 4.3B
-   with an ES8311 stopgap on free GPIOs (as on the kit, it fails forward), the panel
-   scanning, and `effects-profile` plus the loopback counter to measure what the RGB panel's
-   PSRAM traffic costs NAM before deciding the son-in-law build.
+8. Track G, SPI microSD, first: done 2026-10-16 (see Done). The pedal on the 4.3B: boots
+   (night of 2026-10-16), maintenance is the default boot without a footswitch, the panel and
+   UI run with direct PSRAM scanout at 15 fps. Left: the Mac cannot reach anything on the
+   LAN (`docs/waveshare-43b.md`, "Blocked"), then `effects-profile` with the panel scanning,
+   the number that decides the son-in-law build. Then commit the fork's changes.
 
 Display (tracks B and C below, then the bench):
 
@@ -79,8 +80,10 @@ PRs go first because the pedal's board definition depends on them. State as of 2
 | C     | FT6336 touch adapter in the chips catalog; the binding gains the Touchscreen surface (`ft6336_touchscreen.cpp`), viewport mapping and the audio task-priority rule; the base's touch gate already admits any non-FT3168 driver                | chips, targets      | `lafvin-composed-display`: targets ca3372d, core 14f08ad | builds, not flashed |     |
 | D     | Codec-less I2S DAC binding for the PCM5100 (I2S half of the ES8311 binding without the codec-dev calls); only if the kit's speakers become the monitor path                                                                                    | targets, chips      | not started | no              |     |
 | E     | Ask whether the LAFVIN target belongs in `@geastack/targets` once B and C are in                                                                                                                                                               | targets             |             |                 |     |
-| F     | Waveshare ESP32-S3-Touch-LCD-4.3B as a composed board: the 7-inch definition's panel electronics with the B's notes (RS485 on UART0, CAN, isolated I/O, RTC, charger), a `build-config.json` entry and a board page; a small gift PR, asked about by someone on his side (`docs/waveshare-43b.md`) | targets             | `waveshare-touch-lcd-4.3b` (rebased on upstream `9546973`) | yes, 2026-10-15: panel, touch by hand, counter runs | to open |
-| G     | SPI microSD for composed boards: the composer takes `storage.microSD.interface: "spi"` (MOSI, MISO, SCK, chip-select on a GPIO or an expander line), the base's card mount gains the SDSPI path, declared on the 4.3B and the 7-inch (same wiring). Second gift; the pedal needs it to boot on the 4.3B (`docs/waveshare-43b.md`) | cli, targets        | `composed-spi-microsd` (targets stacked on the gift branch) | yes, 2026-10-16: card mounts over SPI2 with the select on EXIO4, push and list verified | to open, after the gift PR |
+| F     | Waveshare ESP32-S3-Touch-LCD-4.3B as a composed board: the 7-inch definition's panel electronics with the B's notes (RS485 on UART0, CAN, isolated I/O, RTC, charger), a `build-config.json` entry and a board page; a small gift PR, asked about by someone on his side (`docs/waveshare-43b.md`) | targets             | `waveshare-touch-lcd-4.3b` (rebased on upstream `9546973`) | yes, 2026-10-15: panel, touch by hand, counter runs | [targets#5](https://github.com/geastack/targets/pull/5), opened 2026-10-16 |
+| G     | SPI microSD for composed boards: the composer takes `storage.microSD.interface: "spi"` (MOSI, MISO, SCK, chip-select on a GPIO or an expander line), the base's card mount gains the SDSPI path, declared on the 4.3B and the 7-inch (same wiring). Second gift; the pedal needs it to boot on the 4.3B (`docs/waveshare-43b.md`) | cli, targets        | `composed-spi-microsd` (targets stacked on the gift branch) | yes, 2026-10-16: card mounts over SPI2 with the select on EXIO4, push and list verified | [cli#7](https://github.com/geastack/cli/pull/7) and [targets#6](https://github.com/geastack/targets/pull/6) (sits on #5), opened 2026-10-16 |
+| H     | Source walk prunes the CLI's `.gea` state directory (fork `d107bfb`); without it any build root other than `.gea/build` fails on reconfigure with a ninja dependency cycle | targets             | on `lafvin-composed-display`; to cut as its own branch | yes, every pedal build since 2026-10-12 | |
+| I     | RGB panel binding answers `Display::flushOdometerRead`, which core's display contract declares (RGB hunk of fork `f65c525`); without it an app that reads the odometer fails to link | targets             | on `lafvin-composed-display`; to cut as its own branch | yes, 2026-10-16 on the 4.3B | |
 
 Each fork is a sibling clone on branch `lafvin-composed-display`; the pedal builds against
 them with the command in `docs/build-environment.md`. Design: `docs/display.md`.
@@ -122,8 +125,8 @@ them with the command in `docs/build-environment.md`. Design: `docs/display.md`.
   USB-in, USB-out pedal, costs no pin anyone wants, and is the only hardware track D could
   drive. If a monitor jack is wanted: a PCM5102A breakout with a 3.5 mm jack on the same three
   I2S lines (`docs/kit.md`, "The audio module").
-- Track F: open the gift PR against geastack/targets (`docs/waveshare-43b.md`); the branch
-  is verified and pushed.
+- Tracks F and G are open as PRs (table above); when #5 merges, rebase #6 onto main so it
+  shows one commit. Fold review feedback back into `docs/waveshare-43b.md`.
 - Two Waveshare ESP32-P4 boards arrived 2026-10-13: an ESP32-P4-WIFI6-POE-ETH (ES8311 codec,
   Ethernet with PoE, C6 with an IPEX antenna) and an ESP32-P4-Module-DEV-KIT (four USB-A ports,
   Ethernet). Both panel-less, both in `docs/p4.md`. They belong to the next project, below.
@@ -196,3 +199,9 @@ boot needs no further purchase; a DSI panel board is optional, later.
   the chip-select on a GPIO or an expander line, the base mounts it through the SDSPI host,
   the 4.3B and 7-inch definitions declare theirs; a file pushed over USB to the 4.3B's card
   and listed back (`docs/waveshare-43b.md`, "Track G"). Sprint item 8's first step is done.
+- Night of 2026-10-16: the pedal fork built for the 4.3B on the published stack and ran on
+  it: app-local board definition with the codec stopgap and the SPI card, the footswitch now
+  follows the board's launcher button and a board without one boots into maintenance; the
+  RGB panel needs direct PSRAM scanout on the pedal (no internal RAM for bounce buffers),
+  then the UI runs at 15 fps. Wi-Fi joins; the Mac could reach nothing on the LAN, so the
+  measurement waits (`docs/waveshare-43b.md`).
