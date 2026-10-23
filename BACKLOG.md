@@ -189,6 +189,35 @@ courtesy question written in `docs/p4.md` (he has P4 work he is keeping closed).
 milestone: a Gea P4 target's first real run on a board on hand, with the C6 Wi-Fi link up.
 The pedal-port board is the POE-ETH on hand: its ES8311 is the pedal's codec, so the headless
 boot needs no further purchase; the 5-DSI-TOUCH-A (sprint item 10) is its panel.
+- **Analog I/O as the pedal's interface, not a novelty (idea 2026-10-23).** The kit's
+  PCM5100 and amp were set aside because the S3 has no headroom to spend and the USB
+  interface was the point. On the P4 the codec path can be the guitar path: TRS in and out
+  through an I2S ADC and DAC on the pedal's own clock, so no USB device, no ring drift, one
+  block of latency each way, and a board that is a pedal without an interface plugged in.
+  Sequence in `docs/p4.md` ("Sequence"): the POE-ETH's ES8311 proves codec-as-interface
+  first (its mic in, its speaker out, no new parts), then a breakout with real line I/O. Chip
+  choice is open: ES8388 or a second ES8311 (stereo or mono, `esp_codec_dev` drivers exist,
+  the targets tree already has an ES8311 binding, so the Gea side is a sibling binding);
+  PCM5102 plus PCM1808 (no control bus at all, track D's codec-less binding shape, PCM1808
+  wants a 256fs MCLK); WM8960 (stereo in and out with a headphone amp, no `esp_codec_dev`
+  driver, so a new driver as well as a binding). Whatever the chip, a guitar needs an
+  analog front end the breakouts do not have: a high-impedance buffer with gain and a
+  mid-rail bias before a line-level ADC, and the output wants a buffer to drive a pedal
+  chain or an amp. That is the analog pedal build on the side meeting this project.
+  Coyopedal side: today the only audio device is the USB host; the codec becomes a second
+  device behind the same interface (`docs/p4.md` step 2 is where it lands). Stretch goals,
+  in order of cost:
+  1. **Multiple IRs and a slider.** Convolution is linear, so a blend of two IRs is one
+     convolution of the blended IR, recomputed when the slider moves: cheap even on the S3,
+     and the pedal already loads user IRs from `/ir` on the card. A coyopedal feature, no
+     hardware.
+  2. **IR capture.** Play a sweep out, record the return, deconvolve: the loopback probe
+     (`src/audio/loopback_probe.hpp`) already does the first two and measures the delay. Works
+     through the USB interface today as well as through a codec later; offline math, not
+     real time. A coyopedal feature; the codec only makes the cabling obvious.
+  3. **Model capture.** Recording the DI and the reamped pair to the card is the pedal's part;
+     NAM training is minutes on a GPU and not a P4 job. Capture on the pedal, train on the
+     Mac, upload the model: a workflow, two small pedal features and a host script.
 - Decide whether the camera stays once two of its pins carry the panel.
 - 4.3B footswitch: wire a stomp switch to the isolated DI0 and test whether the CH422G
   reports it with EXIO0 latched high (`initialOutputs` 0x1f) while the other lines stay
@@ -212,6 +241,12 @@ boot needs no further purchase; the 5-DSI-TOUCH-A (sprint item 10) is its panel.
 
 ### Docs and tooling
 
+- Branch and worktree model for the four forks (`docs/branching.md`, proposed 2026-10-23):
+  `main` mirrors upstream, one topic branch per intended PR (stacked when Gea's
+  first-board-owns-the-component convention makes one depend on another), one integration
+  branch per thing we build, merged from topics and never developed on. Adopt when the A, J,
+  K PRs open: commit the detached `*-pedal-43b` bench stacks as a `pedal-43b` integration
+  branch first.
 - When a piece of work goes upstream, fold what its readers need into that repository's
   canonical docs (README board table, `docs/USB_AUDIO.md`, the skills); the account of how it
   was found stays here.

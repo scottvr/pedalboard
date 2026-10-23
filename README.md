@@ -48,6 +48,7 @@ with `gh repo clone scottvr/<name>`, which adds the `upstream` remote.  When the
   boards, and the assessment of the Waveshare 3.49 against the fork tracks.
 - `docs/waveshare-43b.md`: the Waveshare 4.3B gift definition for Geastack (track F): the
   branch, the bench apart from the pedal, and what the board's first run showed.
+- `docs/branching.md`: the proposed branch, worktree and PR model for the four forks.
 - `docs/p4.md`: the project after the kit, NAM on an ESP32-P4: what the chip changes, where
   Geastack stands on it, the boards on hand and to buy, the courtesy question for upstream.
 - `docs/sources.md`: everything read on the way.
