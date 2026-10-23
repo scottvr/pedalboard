@@ -272,12 +272,18 @@ boot needs no further purchase; the 5-DSI-TOUCH-A (sprint item 10) is its panel.
 - **Upstream merged 2026-10-23** (`94caeac` on `lavfin-kit-notes`; the clone now has an
   `upstream` remote and `main` mirrors it). Three commits: identifiers renamed to coyopedal,
   Full-Speed audio notes, and the Geastack stack pinned at cli and targets 0.1.108, core
-  0.1.49, compiler 1.0.46. The fork's installed node_modules are still cli 0.1.89, targets
-  0.1.87, core 0.1.35: the headless `lafvin` build has never been made on upstream's stack.
-  Host tests pass on the merge (35 audio, three USB fixtures, loopback probe). **Before any
-  pedal PR:** `npm ci`, rebuild the headless `lafvin` target on the pinned stack, and run the
-  MOMIX streaming check again; that is the validation the PR's hardware-testing statement
-  rests on. Divergence: 34 commits, 29 files, mostly `src/native` and the USB tests.
+  0.1.49, compiler 1.0.46. The fork's node_modules were cli 0.1.89, targets 0.1.87, core
+  0.1.35 until the evening, when `npm ci` installed the pinned stack and the headless `lafvin`
+  target was rebuilt on it from a wiped build directory (110 minutes on this Mac; the first
+  attempt failed on track L's define collision, fixed pedal-side in `9029ad0`). Image
+  3,157,152 bytes, 25% of the slot free (`images/lafvin-20261023-9029ad0-stack-0.1.108.bin`).
+  Flashed to the kit's dev board and booted (`tmp/boot-lafvin-20261023.log`): model loaded
+  and calibrated in 4,033 ms, USB host up, footswitch armed, audio mode, 13,724 bytes
+  internal free after bring-up. Host tests pass on the merge (35 audio, three USB fixtures,
+  loopback probe). **Left before any pedal PR:** the MOMIX streaming check on this image (no
+  interface was on the OTG port when it booted); that is the validation the PR's
+  hardware-testing statement rests on. Divergence: 34 commits, 29 files, mostly `src/native`
+  and the USB tests.
 - **PR dependency notes.** The UAC1, WPA3, status-NaN and footswitch-setting PRs depend on
   nothing upstream and can go first. The 4.3B board definition depends on Gea PRs being
   merged *and released* (the gift targets#5, G cli#7 and targets#6, then H, I, A, J): the

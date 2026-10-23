@@ -60,6 +60,10 @@ with `gh repo clone scottvr/<name>`, which adds the `upstream` remote.  When the
   byte-identical to the fixture in `tests/usb/`, capture and playback counts match in every
   5s window, no errors or missed blocks, both cores at about 87% of the 1333 us block. Latency
   passes (by ear until a loopback test is perforked ,which we expecct will validate theh ear-reading).
+- 2026-10-23: the pedal fork is merged with upstream and builds on the Geastack stack upstream
+  pins (cli and targets 0.1.108, core 0.1.49) once one define collision in targets 0.1.108 is
+  worked around (`BACKLOG.md`, track L); the headless image boots on the kit's dev board. The
+  MOMIX streaming check on that image is the open item.
 - The board has been seated back in the carrier for these runs after some minor cosmetic surgeery and a bit of hobbling,
   with the native USB OTG port hosting the MOMIX; the display, touch and speaker need the upstream Geastack work tracked
   in `BACKLOG.md` ("Upstream tracks") before they can be used. The design is in `docs/display.md`.
