@@ -235,6 +235,14 @@ boot needs no further purchase; the 5-DSI-TOUCH-A (sprint item 10) is its panel.
   3. **Model capture.** Recording the DI and the reamped pair to the card is the pedal's part;
      NAM training is minutes on a GPU and not a P4 job. Capture on the pedal, train on the
      Mac, upload the model: a workflow, two small pedal features and a host script.
+- **Round displays as knob faces (idea 2026-10-23).** The 0.7-inch dual round LCD module
+  on hand (two small round panels on one SPI bus, separate chip selects; confirm the
+  controller, probably GC9D01 at 160x160): one beside each encoder of the headless pedal,
+  drawn as a knob face showing the parameter's current value, so the encoder gets the pointer
+  a pot has and the pot's recall problem stays gone; idle faces become a tuner, a level meter
+  or eyes that react to the signal. Also a second controller and a two-panels-one-bus case for
+  the composer's SPI adapter (track B). Hollow-shaft encoders if the knob should sit over the
+  face; an encoder next to each face is the cheap version.
 - Decide whether the camera stays once two of its pins carry the panel.
 - 4.3B footswitch: wire a stomp switch to the isolated DI0 and test whether the CH422G
   reports it with EXIO0 latched high (`initialOutputs` 0x1f) while the other lines stay
