@@ -43,3 +43,10 @@ JOYO MOMIX CAB:
 - https://usmi.mybb.ru/viewtopic.php?id=4 (key patch)
 - https://sonicmetric.com/joyo-momix-cab-guitar-audio-interface-review-the-ultimate-mobile-solution-for-guitarists-and-streamers/
 - https://www.aliexpress.com/s/wiki-ssr/article/joyo-momix-cab-usb-audio-interface
+- https://www.waveshare.com/wiki/ESP32-S3-Touch-LCD-4.3B (schematic: `docs/waveshare-43b-schematic.pdf`, from files.waveshare.com)
+
+Waveshare ESP32-S3-Touch-LCD-3.49 (assessed 2026-10-21, `docs/displays.md`):
+
+- https://www.waveshare.com/wiki/ESP32-S3-Touch-LCD-3.49 (schematic: `docs/waveshare-349-schematic.pdf`, from waveshare.net)
+- https://github.com/waveshareteam/ESP32-S3-Touch-LCD-3.49 (`Examples/ESP-IDF/09_LVGL_V8_Test/main/user_config.h` for the LCD and touch pins,
+  `08_Audio_Test/components/codec_board/board_cfg.txt` for the I2S pins)

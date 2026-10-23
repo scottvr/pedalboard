@@ -42,6 +42,10 @@ with `gh repo clone scottvr/<name>`, which adds the `upstream` remote.  When the
   matter so a table can be generated from them later.
 - `docs/wifi.md`: joining the maintenance network, finding by finding.
 - `docs/build-environment.md`: ESP-IDF on this Mac, the aliases, the fork bench workflow.
+- `docs/web-ui.md`: a browser UI for maintenance mode, served by the pedal in its own skin:
+  what exists, the idea in three sizes, the order of work.
+- `docs/displays.md`: the bench displays bought after the 4.3B died and why, DSI on the P4
+  boards, and the assessment of the Waveshare 3.49 against the fork tracks.
 - `docs/waveshare-43b.md`: the Waveshare 4.3B gift definition for Geastack (track F): the
   branch, the bench apart from the pedal, and what the board's first run showed.
 - `docs/p4.md`: the project after the kit, NAM on an ESP32-P4: what the chip changes, where

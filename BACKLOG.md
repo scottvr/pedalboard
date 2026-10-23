@@ -51,10 +51,44 @@ The 4.3B as a pedal home (decided 2026-10-16, after the gift ran):
 8. Track G, SPI microSD, first: done 2026-10-16 (see Done). The pedal on the 4.3B (fork
    commits `42e125f`, `d394871`, `9f6d5b2`): boots with upstream's audio default, the NAM
    graph misses internal RAM by about 28 KB and the pedal falls back to maintenance; panel,
-   touch, card, Wi-Fi and API up, UI at 15 fps. Next: recover the 27 KB the link maps name
-   (track A's stopgap removal 9.7 KB, track J 4.4 KB, the UI-state fragment question 5 KB),
-   then `effects-profile` with the panel scanning. The Mac needs the Local Network permission
-   for the hosting app (or sudo) to reach the pedal.
+   touch, card, Wi-Fi and API up, UI at 15 fps. Evening 2026-10-16: track A built and flashed,
+   9,992 bytes back, the graph still misses by 9 rings (27.9 KB; `docs/waveshare-43b.md`,
+   "Track A on the pedal"). Tracks J and K (9.3 KB more) are built into
+   `.gea/build-43b`, flashed at 22:05: the graph places (free 67,404 before NAM load), the
+   model loads and calibrates, the USB host starts and takes the port. Morning 2026-10-17:
+   the second shape of track A (the app keeps its audio policy define) restored touch and
+   blocking render waits; VSYNC restart turns the scanout drift into a settling wiggle;
+   2x scale; 12 MHz pclk shows a white panel (reverted). Touch works at 2x. Remaining:
+   the per-render wiggle (`docs/waveshare-43b.md`, "Scanout drift"). Next, by hand: Setup > Maintenance mode on the panel, then
+   `effects-profile` over the API with the panel scanning, which needs the Mac to reach the
+   pedal (Local Network permission for the hosting app, or sudo) and a system disk with
+   room (it was full on 2026-10-16 evening). Then the fork commits for A, J, K and the
+   pedal (speaker guard, 4.3B definition without the stopgap), and the three PRs.
+   **Paused 2026-10-19:** the 4.3B board died on the bench (USB still plugged in while VIN
+   and a battery charger were wired; now flashes its LED and panel rapidly at power-on, a
+   power-circuit part). The panel came off working and is kept. The host-side part of item 8
+   (fork commits for A, J, K, the PRs) does not need the board and stays; the hardware checks
+   wait for a replacement 4.3B. See `docs/waveshare-43b.md`, "The board's death".
+
+Bench displays (ordered 2026-10-19; the ST7796 modules arrived 2026-10-21, the two Waveshare
+DSI panels 2026-10-22; the inventory is `docs/displays.md`, "Displays on hand"):
+
+9. Two XIITIA 3.5" ST7796 SPI modules (320x480, 8-pin, no touch, 3.3 V; one in hand 2026-10-21,
+   the second unaccounted for) for the generic S3
+   devkits: the display-only pedal on a bare S3, the composer's SPI adapter (track B's shape,
+   ST7796 beside ST7789), and the external foot-controller build: real stomp switches and an
+   encoder on GPIO first, an expander later. Footswitches and enclosures also ordered.
+10. Waveshare 5-DSI-TOUCH-A (720x1280, HX8394, GT911-family touch, needs its own 5 V lead) for
+    the two P4 boards: the panel for Gea's first P4 run, a new DSI controller for the targets.
+    On hand since 2026-10-22, with the 4.3inch DSI LCD (touch) bought with the Pi case, which
+    is a bridge-chip panel, not a P4 panel; it waits until the 5-inch proves the P4 DSI path.
+11. The Waveshare ESP32-S3-Touch-LCD-3.49 (172x640 AXS15231B QSPI, ES8311, SDMMC card),
+    assessed 2026-10-21 (`docs/displays.md`). Upstream landed a hand-written V2 target the
+    same day (`b9db1ab`, targets issue #7), so there is no demo-app PR to send. Left: a V1
+    pin variant if anyone has a V1 (backlight 8, reset 21, expander INT 42); a composed
+    `axs15231b` display and touch pair only if the composer route is wanted; and the pedal
+    UI's 205-row minimum against the 172-row landscape, which is coyopedal work. No board
+    on hand; nothing scheduled.
 
 Display (tracks B and C below, then the bench):
 
@@ -83,7 +117,7 @@ PRs go first because the pedal's board definition depends on them. State as of 2
 
 | Track | Change                                                                                                                                                                                                                                         | Repos               | Fork branch | Ran on hardware | PR  |
 | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- | ----------- | --------------- | --- |
-| A     | Gate the ES8311 binding on a composed board's audio chip (`GEA_CUSTOM_TARGET_HAS_AUDIO`, fall back to `audio_runtime_stub.cpp`); one-line `GEA_BOARD_HAS_POWER` for `s3-devkit`                                                                | cli, targets        | not started | no              |     |
+| A     | Gate the ES8311 binding on a composed board's audio chip: the CLI turns the app's audio capability off when the definition has no `chips.audio` (`customTargetDeclaresAudio`, `GEA_CUSTOM_TARGET_HAS_AUDIO` in target.cmake) and the base target guards the same before choosing `audio_runtime_stub.cpp`; tests in both. The s3-devkit `GEA_BOARD_HAS_POWER` line is a coyopedal item, not part of this | cli, targets        | `composed-no-audio-chip` in `cli-track-a/` and `targets-track-a/`, uncommitted | yes, 2026-10-16: the 4.3B pedal builds without the stopgap and boots; 9,992 bytes of DIRAM back, NAM heap free 52,952 to 62,416, largest block 26,624 to 31,744; the graph still misses (9 rings, 27.9 KB) | not yet |
 | B     | SPI panel for composed targets: composer accepts `interface: "spi"` (st7789 first), emits the ST7789 display struct and defines; base CMake includes the sticks3 pipeline; pipeline gains colour order, inversion and optional backlight/reset | cli, targets, chips | `lafvin-composed-display`: cli 5aea1d9, targets c84bff1 f65c525 d107bfb, core 14f08ad | builds, not flashed |     |
 | C     | FT6336 touch adapter in the chips catalog; the binding gains the Touchscreen surface (`ft6336_touchscreen.cpp`), viewport mapping and the audio task-priority rule; the base's touch gate already admits any non-FT3168 driver                | chips, targets      | `lafvin-composed-display`: targets ca3372d, core 14f08ad | builds, not flashed |     |
 | D     | Codec-less I2S DAC binding for the PCM5100 (I2S half of the ES8311 binding without the codec-dev calls); only if the kit's speakers become the monitor path                                                                                    | targets, chips      | not started | no              |     |
@@ -92,7 +126,8 @@ PRs go first because the pedal's board definition depends on them. State as of 2
 | G     | SPI microSD for composed boards: the composer takes `storage.microSD.interface: "spi"` (MOSI, MISO, SCK, chip-select on a GPIO or an expander line), the base's card mount gains the SDSPI path, declared on the 4.3B and the 7-inch (same wiring). Second gift; the pedal needs it to boot on the 4.3B (`docs/waveshare-43b.md`) | cli, targets        | `composed-spi-microsd` (targets stacked on the gift branch) | yes, 2026-10-16: card mounts over SPI2 with the select on EXIO4, push and list verified | [cli#7](https://github.com/geastack/cli/pull/7) and [targets#6](https://github.com/geastack/targets/pull/6) (sits on #5), opened 2026-10-16 |
 | H     | Source walk prunes the CLI's `.gea` state directory (fork `d107bfb`); without it any build root other than `.gea/build` fails on reconfigure with a ninja dependency cycle | targets             | on `lafvin-composed-display`; to cut as its own branch | yes, every pedal build since 2026-10-12 | |
 | I     | RGB panel binding answers `Display::flushOdometerRead`, which core's display contract declares (RGB hunk of fork `f65c525`); without it an app that reads the odometer fails to link | targets             | on `lafvin-composed-display`; to cut as its own branch | yes, 2026-10-16 on the 4.3B | |
-| J     | GT911 binding honours `GEA_EMBEDDED_TOUCH_TASK_STACK_EXTERNAL` like the FT3168 binding (4.4 KB of internal RAM on the 4.3B pedal, `docs/waveshare-43b.md` "Third boot") | targets             | not started | | |
+| J     | GT911 binding honours `GEA_EMBEDDED_TOUCH_TASK_STACK_EXTERNAL` like the FT3168 binding: controller in PSRAM, heap task stack there, static members compiled out (4.4 KB of internal RAM on the 4.3B pedal); test covers both bindings | targets             | `gt911-external-task-stack` in `targets-track-j/`, uncommitted | yes, 2026-10-16 22:05: with A and K stacked, the 4.3B pedal's audio boot places the graph and starts the USB host (`docs/waveshare-43b.md`, "The pedal's audio boot places") | not yet |
+| K     | `gea_ui_state_external.lf` also maps `libgea_active_geatsc.a` (the compiler's one hashed app object, 4,977 bytes of DIRAM on the 4.3B pedal, 4,269 of it .bss) to external RAM; ldgen does not existence-check an archive-level wildcard, so apps without the archive are unaffected | targets             | `ui-state-external-app-archive` in `targets-track-k/`, uncommitted | yes, same boot as J | not yet |
 
 Each fork is a sibling clone on branch `lafvin-composed-display`; the pedal builds against
 them with the command in `docs/build-environment.md`. Design: `docs/display.md`.
@@ -112,13 +147,19 @@ them with the command in `docs/build-environment.md`. Design: `docs/display.md`.
 - `MOMIX BACKUP` / `MOMIX FLASH` maintenance commands (design in `docs/audio/momix.md`, "Planned: flashing the
   MOMIX from the pedal"). Prerequisite: the manual breakout + jl-uboot-tool route proven once.
 - Hide the speaker control when the board's codec init fails (verify the binding already does).
-- Remove the ES8311 stopgap from the LAFVIN definition once track A lands.
+- Remove the ES8311 stopgap from both LAFVIN definitions once track A ships in released
+  `@geastack/cli` and `targets`: the kit's bench build uses the stock packages, and without
+  track A a codec-less definition does not build there (tried and reverted 2026-10-16).
 - `tools/audio-devices-table.py`: read the front matter of every `docs/audio/devices/*.md`
   sheet and render the "Interfaces assessed" table in `docs/audio/usb-audio.md` from it, so the
   sheets are the single source. Host-side, any time; worth it once a second sheet exists.
 - Ask upstream to rename `tools/esp32/amoled_remote.py`: its messages already say "CoyoPedal"
   on any board (fork commit `7b81d9c`) and its discovery match was never board-specific; only
   the file name lags. Low priority, easy ask alongside the UAC1 PR.
+- Browser UI for maintenance mode (`docs/web-ui.md`), own feature branch, developed against a
+  headless S3 and inherited by the panel boards: a page served by the existing httpd, in the
+  pedal's own stylesheets and font, over the existing API. Design note to the maintainer
+  first; after the 4.3B measurement.
 - Runtime Wi-Fi provisioning over Improv Serial (`docs/wifi.md`), own branch:
   credentials to NVS, compiled header as fallback, the API token stays compiled until the
   device can generate and reveal one.
@@ -146,11 +187,17 @@ Starts after the kit's display and the gift PR. Before any code, ask the maintai
 courtesy question written in `docs/p4.md` (he has P4 work he is keeping closed). First
 milestone: a Gea P4 target's first real run on a board on hand, with the C6 Wi-Fi link up.
 The pedal-port board is the POE-ETH on hand: its ES8311 is the pedal's codec, so the headless
-boot needs no further purchase; a DSI panel board is optional, later.
+boot needs no further purchase; the 5-DSI-TOUCH-A (sprint item 10) is its panel.
 - Decide whether the camera stays once two of its pins carry the panel.
 - 4.3B footswitch: wire a stomp switch to the isolated DI0 and test whether the CH422G
   reports it with EXIO0 latched high (`initialOutputs` 0x1f) while the other lines stay
-  outputs; if not, a soldered GPIO or a second I2C expander on the I2C terminal.
+  outputs (or with the whole bank switched to input between card accesses, since the four
+  outputs idle high; check the datasheet for an input-mode pull-up first). If not, the
+  schematic gives three reclaimable GPIOs with nothing to remove, all soldered on the bottom
+  side or the module castellations: 43 (RS485 receive, at R64), 15 (CAN transmit, at the
+  TJA1051's pin 1) and 6 (RTC interrupt, at the PCF85063's pin 4; also the only ADC1 pin).
+  Track A first: the ES8311 stopgap claims those pins. Knobs as encoders on the I2C header,
+  not pots (`docs/waveshare-43b.md`, "Controls beyond touch").
 
 ### Upstream coyopedal (after hardware results)
 
