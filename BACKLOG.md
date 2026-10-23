@@ -136,6 +136,19 @@ PRs go first because the pedal's board definition depends on them. State as of 2
 | I     | RGB panel binding answers `Display::flushOdometerRead`, which core's display contract declares (RGB hunk of fork `f65c525`); without it an app that reads the odometer fails to link | targets             | topic `rgb-flush-odometer-read`: targets df7e404 (`targets-track-i/`), cut 2026-10-23 with a full message; also inside `f65c525` on `lafvin-composed-display` | yes, 2026-10-16 on the 4.3B | not yet |
 | J     | GT911 binding honours `GEA_EMBEDDED_TOUCH_TASK_STACK_EXTERNAL` like the FT3168 binding: controller in PSRAM, heap task stack there, static members compiled out (4.4 KB of internal RAM on the 4.3B pedal); test covers both bindings | targets             | topic `gt911-external-task-stack`: targets 7504bc5 (`targets-track-j/`), on upstream main of 2026-10-23; merged into `pedal-43b` | yes, 2026-10-16 22:05: with A and K stacked, the 4.3B pedal's audio boot places the graph and starts the USB host (`docs/waveshare-43b.md`, "The pedal's audio boot places") | not yet |
 | K     | `gea_ui_state_external.lf` also maps `libgea_active_geatsc.a` (the compiler's one hashed app object, 4,977 bytes of DIRAM on the 4.3B pedal, 4,269 of it .bss) to external RAM; ldgen does not existence-check an archive-level wildcard, so apps without the archive are unaffected | targets             | **Superseded 2026-10-23**: upstream `dfeb417` adds the same `libgea_active_geatsc.a` mapping to the fragment; branch and worktree dropped (old tip kept as tag `pre-rebase-ui-state-external-app-archive`) | yes, same boot as J | none needed |
+| L     | Base target yields `GEA_EMBEDDED_RUNTIME_TASK_STACK_BYTES` and `_EXTERNAL` to an app that declares them in `gea.defines`, the way it yields the panel-endian define to a composed board. Since upstream `b9db1ab` (2026-10-21, in 0.1.108) the base hard-sets 32768 and 1 for every board, and an app's own value meets it on the same command line: `-Werror` fails every engine unit with "redefined". coyopedal (upstream's own package.json too) sets 20480. | targets | topic `runtime-task-stack-app-override`: targets 90fc082 (`targets-track-l/`), with test | the pedal's revalidation build on 0.1.108 hit it 2026-10-23; the pedal-side workaround (`9029ad0`, drop the app defines) is what the build runs with | not yet; issue text drafted below |
+
+Draft issue for geastack/targets (track L), to open with the PR:
+
+> **An app's `GEA_EMBEDDED_RUNTIME_TASK_STACK_BYTES` collides with the base's since b9db1ab**
+> Since b9db1ab the 2.06 base target defines `GEA_EMBEDDED_RUNTIME_TASK_STACK_BYTES=32768`
+> and `GEA_EMBEDDED_RUNTIME_TASK_STACK_EXTERNAL=1` for every board. `gea_framework.cmake`
+> already puts an app's `gea.defines` on the whole build, so an app that sizes that stack
+> itself gets both definitions on one command line and gcc 15 under `-Werror` stops with
+> `'GEA_EMBEDDED_RUNTIME_TASK_STACK_BYTES' redefined` in every engine translation unit.
+> coyopedal's package.json declares 20480 and fails to build on targets 0.1.108 this way.
+> The base already yields `GEA_EMBEDDED_PIXEL_PANEL_ENDIAN` to a composed board's define;
+> the attached PR does the same for the two runtime-stack defines, with a test.
 
 Branch model: `docs/branching.md` (adopted 2026-10-23). Each fork's `main` mirrors upstream;
 topic branches above are the PRs; integration branches build the pedal: `pedal-43b` (cli and
