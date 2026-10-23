@@ -241,6 +241,21 @@ boot needs no further purchase; the 5-DSI-TOUCH-A (sprint item 10) is its panel.
 
 ### Upstream coyopedal (after hardware results)
 
+- **Upstream merged 2026-10-23** (`94caeac` on `lavfin-kit-notes`; the clone now has an
+  `upstream` remote and `main` mirrors it). Three commits: identifiers renamed to coyopedal,
+  Full-Speed audio notes, and the Geastack stack pinned at cli and targets 0.1.108, core
+  0.1.49, compiler 1.0.46. The fork's installed node_modules are still cli 0.1.89, targets
+  0.1.87, core 0.1.35: the headless `lafvin` build has never been made on upstream's stack.
+  Host tests pass on the merge (35 audio, three USB fixtures, loopback probe). **Before any
+  pedal PR:** `npm ci`, rebuild the headless `lafvin` target on the pinned stack, and run the
+  MOMIX streaming check again; that is the validation the PR's hardware-testing statement
+  rests on. Divergence: 34 commits, 29 files, mostly `src/native` and the USB tests.
+- **PR dependency notes.** The UAC1, WPA3, status-NaN and footswitch-setting PRs depend on
+  nothing upstream and can go first. The 4.3B board definition depends on Gea PRs being
+  merged *and released* (the gift targets#5, G cli#7 and targets#6, then H, I, A, J): the
+  definition declares no codec (A) and a microSD slot on SPI (G), so on the stock packages
+  it does not build. Say so in the PR text, with the PR numbers. The LAFVIN display
+  definition likewise waits on B and C.
 - Outreach to the author (sequence in `docs/audio/usb-audio.md`, "iRig HD 2 profile retirement"), then the UAC1 PR
   with a hardware-testing statement, README board table, `docs/USB_AUDIO.md`, skill updates.
 - WPA3 commit `e6dc162` goes in the same conversation; its message is written to be the PR text.

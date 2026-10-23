@@ -92,6 +92,10 @@ by cherry-picking the bench chain's commits onto upstream main; the three PR bra
 rebased and force-pushed to the fork with `--force-with-lease` (all three PRs mergeable
 again); both `pedal-43b` branches reset to upstream main and re-merged from the rebased
 topics. First real exercise of the model: the rebuild took one command per repo.
+The pedal fork got its `upstream` remote the same evening, `main` fast-forwarded, and
+upstream's three new commits merged into `lavfin-kit-notes` with `--no-ff` (one doc
+conflict, both sides kept); as the pedal's integration branch it is merged, not rebased,
+since its history is pushed and read.
 Not done: `lafvin-composed-display` still carries B, C, H and I as direct commits and stays
 checked out in the three main clones until B and C are cut as topics; `core-main/` stays a
 detached worktree at the upstream main the bench built with (core's `main` is 54 commits
