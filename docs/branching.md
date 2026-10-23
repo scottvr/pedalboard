@@ -20,7 +20,9 @@ a topic branch (tracks B and C) and became the place everything else was stacked
 Per fork, three kinds of branch:
 
 1. **`main` mirrors `upstream/main`.** Fast-forward only, never committed to. `git fetch
-   upstream && git merge --ff-only upstream/main`. Everything is measured against it.
+   upstream && git merge --ff-only upstream/main`, then `git push origin main` in the same
+   breath, so the fork on GitHub mirrors too: it carries nothing of ours, so the push is
+   never a decision. Everything is measured against it.
 2. **One topic branch per intended upstream PR**, named for the change, not for us
    (`composed-no-audio-chip`, `gt911-external-task-stack`), based on `upstream/main`. The
    branch *is* the PR: no separate `ready-for-upstream` branch, no cherry-pick promotion,
