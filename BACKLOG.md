@@ -96,7 +96,10 @@ Display (tracks B and C below, then the bench):
 4. Hardware mod. Pins 0, 19 and 20 were lifted before the 2026-10-10 first-light runs (the
    board has sat in the carrier with the native port hosting the MOMIX and BOOT as the
    footswitch since). Left: two signal jumpers with the camera ribbon unplugged, the panel's
-   MOSI pad to GPIO 16 and its D/C pad to GPIO 17, the pins the display definition names.
+   MOSI pad to GPIO 16 and its D/C pad to GPIO 17, the pins the display definition names
+   (test-fitted 2026-10-19, `docs/kit.md` step 3). Waits on solder: the rework station and
+   solder are at the house, next visit Sunday 2026-10-26; solder for the apartment's Pinecil
+   ordered 2026-10-23.
    SCK 21 and CS 47 stay as wired; GPIO 3, 46 and 15 stay with the ES8311 stopgap. The
    carrier routes no backlight or reset GPIO to the panel: BL is always on, RST follows EN.
 5. Done 2026-10-12 (host side): `boards/esp32-s3-lafvin-multimedia-2.8-display.json` with
