@@ -598,6 +598,13 @@ from a running app boots normally; the board's own RESET button boots normally.
 
 ### The board's death (2026-10-19, after midnight)
 
+**Addendum 2026-10-23:** the symptom below, rapid LED and panel flashing at power-on, was
+reproduced on the LAFVIN dev board from one port of the USB hub, bare and in the carrier, and
+vanished on another port. That is a power-delivery fault on the hub side, not the board. The
+4.3B was never tried on another port after it "died", so retest it on a known-good hub port
+and on a direct port before concluding anything. The USB-plus-VIN-plus-charger wiring may
+still have hurt it, but the evidence no longer says so.
+
 The 4.3B was being wired for VIN and a battery charger with the USB cable still plugged in.
 A click, not a capacitor, and since then the board flashes its LED and panel rapidly at
 power-on, with the panel detached as well, and no button combination at power-on changes it.

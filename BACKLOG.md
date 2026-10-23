@@ -70,6 +70,10 @@ The 4.3B as a pedal home (decided 2026-10-16, after the gift ran):
    power-circuit part). The panel came off working and is kept. The host-side part of item 8
    (fork commits for A, J, K, the PRs) does not need the board and stays; the hardware checks
    wait for a replacement 4.3B. See `docs/waveshare-43b.md`, "The board's death".
+   **Maybe not dead (2026-10-23):** the LAFVIN dev board showed the same rapid all-LEDs
+   flashing on one port of the USB hub and ran normally on another, bare or in the carrier.
+   The 4.3B's diagnosis rested on that symptom alone, so retest it on a known-good port
+   (and a direct Mac port) before buying a replacement.
 
 Bench displays (ordered 2026-10-19; the ST7796 modules arrived 2026-10-21, the two Waveshare
 DSI panels 2026-10-22; the inventory is `docs/displays.md`, "Displays on hand"):
