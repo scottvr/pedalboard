@@ -5,14 +5,8 @@ targets/
 core/
 .DS_Store
 tmp/
-targets-4.3b/
-core-main/
-targets-4.3b-node_modules.off/
-targets-spi-sd/
-cli-spi-sd/
-targets-pedal-43b/
-cli-track-a/
-cli-pedal-43b/
-targets-track-a/
-targets-track-j/
-targets-track-k/
+# Worktrees of the forks: <repo>-<branch>; `git worktree list` in each fork is the inventory.
+cli-*/
+targets-*/
+core-*/
+coyopedal-*/

@@ -118,7 +118,7 @@ PRs go first because the pedal's board definition depends on them. State as of 2
 
 | Track | Change                                                                                                                                                                                                                                         | Repos               | Fork branch | Ran on hardware | PR  |
 | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- | ----------- | --------------- | --- |
-| A     | Gate the ES8311 binding on a composed board's audio chip: the CLI turns the app's audio capability off when the definition has no `chips.audio` (`customTargetDeclaresAudio`, `GEA_CUSTOM_TARGET_HAS_AUDIO` in target.cmake) and the base target guards the same before choosing `audio_runtime_stub.cpp`; tests in both. The s3-devkit `GEA_BOARD_HAS_POWER` line is a coyopedal item, not part of this | cli, targets        | `composed-no-audio-chip`: cli 96c9928 (`cli-track-a/`), targets 5a9ce5a (`targets-track-a/`), committed 2026-10-23 | yes, 2026-10-16: the 4.3B pedal builds without the stopgap and boots; 9,992 bytes of DIRAM back, NAM heap free 52,952 to 62,416, largest block 26,624 to 31,744; the graph still misses (9 rings, 27.9 KB) | not yet |
+| A     | Gate the ES8311 binding on a composed board's audio chip: the CLI turns the app's audio capability off when the definition has no `chips.audio` (`customTargetDeclaresAudio`, `GEA_CUSTOM_TARGET_HAS_AUDIO` in target.cmake) and the base target guards the same before choosing `audio_runtime_stub.cpp`; tests in both. The s3-devkit `GEA_BOARD_HAS_POWER` line is a coyopedal item, not part of this | cli, targets        | topic `composed-no-audio-chip`: cli 96c9928 (`cli-track-a/`), targets 5a9ce5a (`targets-track-a/`); merged into integration `pedal-43b` | yes, 2026-10-16: the 4.3B pedal builds without the stopgap and boots; 9,992 bytes of DIRAM back, NAM heap free 52,952 to 62,416, largest block 26,624 to 31,744; the graph still misses (9 rings, 27.9 KB) | not yet |
 | B     | SPI panel for composed targets: composer accepts `interface: "spi"` (st7789 first), emits the ST7789 display struct and defines; base CMake includes the sticks3 pipeline; pipeline gains colour order, inversion and optional backlight/reset | cli, targets, chips | `lafvin-composed-display`: cli 5aea1d9, targets c84bff1 f65c525 d107bfb, core 14f08ad | builds, not flashed |     |
 | C     | FT6336 touch adapter in the chips catalog; the binding gains the Touchscreen surface (`ft6336_touchscreen.cpp`), viewport mapping and the audio task-priority rule; the base's touch gate already admits any non-FT3168 driver                | chips, targets      | `lafvin-composed-display`: targets ca3372d, core 14f08ad | builds, not flashed |     |
 | D     | Codec-less I2S DAC binding for the PCM5100 (I2S half of the ES8311 binding without the codec-dev calls); only if the kit's speakers become the monitor path                                                                                    | targets, chips      | not started | no              |     |
@@ -127,11 +127,17 @@ PRs go first because the pedal's board definition depends on them. State as of 2
 | G     | SPI microSD for composed boards: the composer takes `storage.microSD.interface: "spi"` (MOSI, MISO, SCK, chip-select on a GPIO or an expander line), the base's card mount gains the SDSPI path, declared on the 4.3B and the 7-inch (same wiring). Second gift; the pedal needs it to boot on the 4.3B (`docs/waveshare-43b.md`) | cli, targets        | `composed-spi-microsd` (targets stacked on the gift branch) | yes, 2026-10-16: card mounts over SPI2 with the select on EXIO4, push and list verified | [cli#7](https://github.com/geastack/cli/pull/7) and [targets#6](https://github.com/geastack/targets/pull/6) (sits on #5), opened 2026-10-16 |
 | H     | Source walk prunes the CLI's `.gea` state directory (fork `d107bfb`); without it any build root other than `.gea/build` fails on reconfigure with a ninja dependency cycle | targets             | on `lafvin-composed-display`; to cut as its own branch | yes, every pedal build since 2026-10-12 | |
 | I     | RGB panel binding answers `Display::flushOdometerRead`, which core's display contract declares (RGB hunk of fork `f65c525`); without it an app that reads the odometer fails to link | targets             | on `lafvin-composed-display`; to cut as its own branch | yes, 2026-10-16 on the 4.3B | |
-| J     | GT911 binding honours `GEA_EMBEDDED_TOUCH_TASK_STACK_EXTERNAL` like the FT3168 binding: controller in PSRAM, heap task stack there, static members compiled out (4.4 KB of internal RAM on the 4.3B pedal); test covers both bindings | targets             | `gt911-external-task-stack`: targets 5567033 (`targets-track-j/`), committed 2026-10-23 | yes, 2026-10-16 22:05: with A and K stacked, the 4.3B pedal's audio boot places the graph and starts the USB host (`docs/waveshare-43b.md`, "The pedal's audio boot places") | not yet |
-| K     | `gea_ui_state_external.lf` also maps `libgea_active_geatsc.a` (the compiler's one hashed app object, 4,977 bytes of DIRAM on the 4.3B pedal, 4,269 of it .bss) to external RAM; ldgen does not existence-check an archive-level wildcard, so apps without the archive are unaffected | targets             | `ui-state-external-app-archive`: targets 3c0bdcb (`targets-track-k/`), committed 2026-10-23 | yes, same boot as J | not yet |
+| J     | GT911 binding honours `GEA_EMBEDDED_TOUCH_TASK_STACK_EXTERNAL` like the FT3168 binding: controller in PSRAM, heap task stack there, static members compiled out (4.4 KB of internal RAM on the 4.3B pedal); test covers both bindings | targets             | topic `gt911-external-task-stack`: targets 5567033 (`targets-track-j/`); merged into `pedal-43b` | yes, 2026-10-16 22:05: with A and K stacked, the 4.3B pedal's audio boot places the graph and starts the USB host (`docs/waveshare-43b.md`, "The pedal's audio boot places") | not yet |
+| K     | `gea_ui_state_external.lf` also maps `libgea_active_geatsc.a` (the compiler's one hashed app object, 4,977 bytes of DIRAM on the 4.3B pedal, 4,269 of it .bss) to external RAM; ldgen does not existence-check an archive-level wildcard, so apps without the archive are unaffected | targets             | topic `ui-state-external-app-archive`: targets 3c0bdcb (`targets-track-k/`); merged into `pedal-43b` | yes, same boot as J | not yet |
 
-Each fork is a sibling clone on branch `lafvin-composed-display`; the pedal builds against
-them with the command in `docs/build-environment.md`. Design: `docs/display.md`.
+Branch model: `docs/branching.md` (adopted 2026-10-23). Each fork's `main` mirrors upstream;
+topic branches above are the PRs; integration branches build the pedal: `pedal-43b` (cli and
+targets, worktrees `cli-pedal-43b/` and `targets-pedal-43b/`: the gift board, G, H, I, A, J,
+K on upstream main as of 2026-10-16) and `lafvin-composed-display` (the three main clones:
+B, C, H, I developed on it before the model existed, so it is both topic and integration
+until B and C are cut as PRs). Build commands in `docs/build-environment.md`. Design:
+`docs/display.md`. Upstream moved under every branch on 2026-10-23 (cli 32 commits,
+targets 26, core 54): rebase the topics before the PRs open and rebuild `pedal-43b`.
 
 ## Backlog
 
@@ -241,12 +247,10 @@ boot needs no further purchase; the 5-DSI-TOUCH-A (sprint item 10) is its panel.
 
 ### Docs and tooling
 
-- Branch and worktree model for the four forks (`docs/branching.md`, proposed 2026-10-23):
-  `main` mirrors upstream, one topic branch per intended PR (stacked when Gea's
-  first-board-owns-the-component convention makes one depend on another), one integration
-  branch per thing we build, merged from topics and never developed on. Adopt when the A, J,
-  K PRs open: commit the detached `*-pedal-43b` bench stacks as a `pedal-43b` integration
-  branch first.
+- Branch model adopted 2026-10-23 (`docs/branching.md`). Left: cut tracks B and C (and H, I,
+  which `pedal-43b` carries as re-rolled commits) as topic branches off upstream main, so
+  `lafvin-composed-display` becomes a pure integration branch; rebase every topic onto the
+  upstream main of 2026-10-23 before the PRs; push the integration branches for backup.
 - When a piece of work goes upstream, fold what its readers need into that repository's
   canonical docs (README board table, `docs/USB_AUDIO.md`, the skills); the account of how it
   was found stays here.

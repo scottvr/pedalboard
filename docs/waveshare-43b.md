@@ -172,7 +172,7 @@ track G branches and the published framework stack:
   own convention.
 
 Build: from `coyopedal/`, the track G CLI (`cli-spi-sd/bin/gea.mjs`), `GEA_TARGETS_ROOT` at
-`targets-pedal-43b` (a detached worktree: the track G branch plus the fork's source-walk fix
+`targets-pedal-43b` (since 2026-10-23 the `pedal-43b` integration branch, `docs/branching.md`; before that a detached worktree: the track G branch plus the fork's source-walk fix
 `d107bfb`, which upstream main still lacks; without it any build root other than `.gea/build`
 fails on reconfigure with ninja's "dependency cycle: gea-vite-bundle.js", exactly as on
 2026-10-12; and the RGB hunk of the fork's `f65c525`, the `Display::flushOdometerRead` the
@@ -447,7 +447,7 @@ the capability reaches the `-D` cache and the environment; `target.cmake` also g
 `GEA_CUSTOM_TARGET_HAS_AUDIO`), and the base target's CMake forces the same from that flag
 before it reports the capabilities, for a direct `idf.py` build or an older CLI. One test
 in each repository; the CLI's board, build-config and esp32 suites pass (60 tests).
-Branches `composed-no-audio-chip` in `cli-track-a/` and `targets-track-a/`, uncommitted.
+Branches `composed-no-audio-chip` in `cli-track-a/` and `targets-track-a/` (cli 96c9928, targets 5a9ce5a, committed 2026-10-23).
 
 The 4.3B definition lost its ES8311 block. The pedal needed one fix: `internal_speaker.cpp`
 declared its worker handle outside the `GEA_BOARD_HAS_SPEAKER` guard, an unused-variable

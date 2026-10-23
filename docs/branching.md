@@ -73,8 +73,13 @@ of a conflict-prone merge into a `main` that no longer matches anything upstream
 
 ## Adopted
 
-Not yet. Steps when it is: commit the bench stacks as `pedal-43b` integration branches
-(merge A, J, K, G and the gift branch onto `upstream/main` and confirm the pedal build is
-byte-for-byte what the detached trees produce), move the three main clones to `main` as
-mirrors, replace the per-directory `.gitignore` lines with patterns, update the BACKLOG
-tracks table's "Fork branch" column to name topic and integration branches separately.
+2026-10-23. Done that day: `main` fast-forwarded to `upstream/main` in cli, targets and core
+(none had commits of its own); `pedal-43b` created in cli and targets at the bench chain's
+tip (the gift board, G, H, I as re-rolled commits) with A, J and K merged in, and checked out
+in `cli-pedal-43b/` and `targets-pedal-43b/` in place of the detached copies, after a diff
+showed the merged tree equal to the bench tree apart from the topics' new tests and two
+comment lines the topics' newer base had changed; `.gitignore` covers worktrees by pattern.
+Not done: `lafvin-composed-display` still carries B, C, H and I as direct commits and stays
+checked out in the three main clones until B and C are cut as topics; `core-main/` stays a
+detached worktree at the upstream main the bench built with (core's `main` is 54 commits
+newer). Upstream moved under every topic on 2026-10-23: rebase before the PRs.
