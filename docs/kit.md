@@ -54,7 +54,11 @@ the open item; step 4 was measured 2026-10-10 as written.)
    `src/native/main/main.cpp`, with an interrupt input, and the touch UI has no bypass control).
 3. Jumper the display module's MOSI and DC pads to free dev-board header pins (GPIO 3 and 46,
    or camera pins with the ribbon unplugged). The panel already runs through the GPIO matrix,
-   so any free pin works.
+   so any free pin works. The display definition names GPIO 16 for MOSI and 17 for D/C, so
+   the jumpers run from the socket's TFT_MOSI and TFT_DC positions (the lifted pins' holes)
+   to the GPIO 16 and 17 positions. `photos/IMG_1298b-lafvin-carrier-panel-jumpers-test-fit.jpeg`
+   (2026-10-19 morning, dev board out of the socket) is the test fit of the two wires on the
+   carrier's back, from the same session as the stand-off header photos.
 4. USB: the dev board's OTG port. Measured 2026-10-10: with the board powered from the UART
    port, the OTG port carries 5 V out (the MOMIX lights up in it), and each port alone puts a
    steady 5 V on the header's 5 V pin, so no IN/OUT jumper work is needed. The fallback is to
