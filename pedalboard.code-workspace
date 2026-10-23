@@ -2,6 +2,9 @@
 	"folders": [
 		{
 			"path": "."
+		},
+		{
+			"path": "cli-pedal-43b"
 		}
 	],
 	"settings": {}

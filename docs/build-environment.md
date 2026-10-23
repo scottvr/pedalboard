@@ -78,3 +78,14 @@ commits, the framework stack, sizes and SHA-256 prefixes. The files are gitignor
 is committed. Flash a saved image with `npx gea flash --board <alias> --no-build --image
 ../images/<name>.bin`. Overrides when the build was set aside or built on the side stack:
 `BIN=`, `SHA=`, `STACK=`, `NOTES=` in the environment.
+
+## The volume itself
+
+`/Volumes/idf6` is an APFS volume inside `/Volumes/LaCie/idf6.sparsebundle` on the LaCie
+drive, attached at boot by the root launch daemon
+`/Library/LaunchDaemons/com.shared.mountsparsebundle.plist`. When USB is disturbed (a board
+taking its port as a host, a replug) the image device can drop and the volume vanishes with
+every build on it; `diskutil mount` then fails on the stale device while the bundle is fine.
+Recovery: `hdiutil detach disk<N> -force` on the stale device, then `sudo launchctl kickstart
+-k system/com.shared.mountsparsebundle`. The Mac's system disk runs full, so builds set
+`TMPDIR` to `pedalboard/tmp/tmpdir` and write their logs under `pedalboard/tmp/`.

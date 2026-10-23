@@ -123,5 +123,8 @@ RGB boards with a GT911 and an I/O expander.
    build. Fix: the CLI's `custom-target.mjs` emits `GEA_CUSTOM_TARGET_HAS_AUDIO`, and the 2.06
    target's CMake falls back to `audio_runtime_stub.cpp` with `GEA_BOARD_HAS_SPEAKER=0` when a
    custom target has no audio chip. Our stopgap (PCM5100 declared as ES8311) goes away then.
+   Done in the forks 2026-10-16 (track A, `BACKLOG.md`): the CLI resolves it before the
+   capability reaches CMake, the base guards it again, and the 4.3B pedal built and booted
+   without the stopgap. The kit keeps its stopgap until the change ships in the stock packages.
 3. Already known: no SPI panel driver (ST7789/ILI9341) in the composable base, no FT6336
    touch adapter, no codec-less I2S DAC driver.

@@ -381,3 +381,230 @@ three rows (19 KB) plus fragmentation relief may be enough; the stopgap's 9.7 KB
 the largest single item and is exactly what track A was for. The pedal fork's three commits
 of the morning: the status NaN fix, the footswitch as a board-block setting, and the 4.3B
 board support, each with its own message.
+
+### Controls beyond touch: the pin budget, read from the schematic (2026-10-16, evening)
+
+The question was how many physical controls the board can take (a stomp switch or two, a
+couple of knobs) and whether any of the feature pins can be jumpered back to GPIO. The
+schematic (`docs/waveshare-43b-schematic.pdf`, from the wiki) answers both.
+
+The module has 33 usable GPIOs and the board commits 32: the panel takes 20, the card 3,
+USB 2, I2C 2, the touch interrupt 1, and the RS485 and CAN transceivers 2 each. The
+remaining one, GPIO 6, is the RTC's interrupt line, and no GPIO reaches a header. The only
+configuration on the board is a DIP switch for the 120-ohm CAN and RS485 terminators, a
+solder jumper choosing 3.3 V or 5 V for the I2C header, and unpopulated pads for the
+strapping-pin resistors; the four 0-ohm links are on the card lines. The transceivers
+(SP3485EN for RS485, TJA1051 for CAN) are wired straight to the module, so nothing frees a
+pin without soldering. What each of the five non-panel pins allows:
+
+| GPIO | On the board | Usable as | Why |
+| --- | --- | --- | --- |
+| 43 | RS485 receive: the SP3485's RO through R64 (4.7 K) | input, switch to ground | RO idles high in receive mode and acts as a weak pull-up through the 4.7 K; nothing to remove |
+| 15 | CAN transmit: straight into the TJA1051's TXD | input, switch to ground | TXD is high impedance with an internal pull-up; a low only makes the unconnected bus dominant until the chip's timeout |
+| 6 | the PCF85063's INT, open drain | input, or ADC1 channel 5 for one pot | the RTC never asserts it unless firmware enables an alarm, which the pedal does not |
+| 44 | RS485 transmit: a transistor base through R68 (100 ohms), R67 4.7 K pull-up | output only | the base junction clamps the net near 0.75 V, so an input reads low until R68 is removed |
+| 16 | CAN receive: driven push-pull by the TJA1051's RXD | nothing | driven even in standby; reclaiming it means lifting the pin |
+
+So three clean inputs without a second board: 43, 15 and 6. One encoder on 43 and 15
+plus a stomp switch on 6, or two switches and one pot on 6; the two isolated DI lines come
+on top if the expander read works out (above). GPIO 15 and 16 are ADC2, unusable with
+Wi-Fi up, so GPIO 6 is the only analog input. GPIO 43 and 44 are UART0: the ROM bootloader's
+boot messages go out of 43 into the RS485 receiver through the 4.7 K, harmlessly. Note the
+board's net names are from the bus's point of view: GPIO 43 (the S3's U0TXD) receives, GPIO
+44 (U0RXD) transmits, so the vendor's RS485 demo must route the UART through the matrix.
+
+Solder points, all on the bottom side or the module edge: the module's castellations
+(1.27 mm pitch; IO6, IO15, IO16 on one edge, IO43, IO44 on the other), or a component pad:
+R64 for GPIO 43, the TJA1051's pin 1 for GPIO 15, the PCF85063's pin 4 for GPIO 6. The two
+chips are SO-8; the resistors are unmarked for size, probably 0402.
+
+A firmware dependency first: those five pins are exactly the ES8311 stopgap's fake I2S
+lines in the pedal's board block, chosen because nothing else used them. Track A (gate the
+audio binding on a composed board's audio chip) has to land, or the stopgap has to move,
+before a reclaimed pin can be configured as a GPIO; and there is nowhere for the stopgap to
+move to. Track A was already first in line for the RAM shortfall.
+
+Knobs: on a preset pedal an encoder beats a pot, because a pot is absolute and points at the
+wrong value after a preset recall while the panel already shows the number. Beyond the three
+reclaimed pins, controls go on the I2C header: an MCP23017 polled at about 1 kHz for
+encoders and buttons (plus an I2C ADC if a pot is still wanted), or a small MCU on the leash
+presenting one register map, which also carries over to the P4 project. Either way the pedal
+needs a new input path: today its only physical control is the one footswitch's tap and
+hold. The isolated DO0/DO1 (450 mA open drain) can drive an engaged LED on a leash.
+
+Enclosure shape that follows: the 4.3B face up as the display unit with its battery, the
+stompable parts in a separate box on a short cable carrying the I2C lines and the isolated
+I/O; keep the I2C leg under about a metre at the bus's current speed.
+
+### Track A on the pedal (2026-10-16, evening)
+
+The track turned out smaller than planned: the base target already had a no-audio path
+(`audio_runtime_stub.cpp`, `GEA_EMBEDDED_AUDIO_UNUSED=1`) for apps that never import audio,
+chosen from the app analysis; what was missing was the board having a say. The CLI now sets
+the app's audio capability to off when a composed definition has no `chips.audio`
+(`customTargetDeclaresAudio` in `custom-target.mjs`, called in `prepareEsp32Build` before
+the capability reaches the `-D` cache and the environment; `target.cmake` also gains
+`GEA_CUSTOM_TARGET_HAS_AUDIO`), and the base target's CMake forces the same from that flag
+before it reports the capabilities, for a direct `idf.py` build or an older CLI. One test
+in each repository; the CLI's board, build-config and esp32 suites pass (60 tests).
+Branches `composed-no-audio-chip` in `cli-track-a/` and `targets-track-a/`, uncommitted.
+
+The 4.3B definition lost its ES8311 block. The pedal needed one fix: `internal_speaker.cpp`
+declared its worker handle outside the `GEA_BOARD_HAS_SPEAKER` guard, an unused-variable
+warning in the no-speaker build; guarded. Built, flashed over USB, boot log captured over
+the USB-Serial/JTAG port with a reset from the Mac (`capture_boot.py`, pyserial, the esptool
+DTR/RTS sequence):
+
+| | before (morning image) | track A |
+| --- | ---: | ---: |
+| DIRAM used (link map) | 215,793 | 205,801 |
+| image | 3,329,232 | 3,270,544 |
+| internal heap at init | 13 + 5 + 21 + 32 KiB | 22 + 5 + 21 + 32 KiB |
+| `before NAM load` free / largest | 52,952 / 26,624 | 62,416 / 31,744 |
+| history rings unallocated | 13 | 9 (27,888 bytes) |
+
+So the audio runtime's 9,656-byte static stack and the codec objects are gone as the map
+predicted, and the graph still does not place: the plan wants 30,344 bytes in one piece
+plus the rings, and the largest piece is 31,744. The pedal falls back to maintenance as
+before; panel, touch, Wi-Fi and the API come up. The per-object difference against the
+kit's map, with track A in: 17,356 bytes, of which the generated UI object 4,977, `gt911`
+4,363, `canvas` (engine 0.1.17 against 0.1.10) 3,648, the RGB path 3,886, `usb_audio` 787.
+
+Tracks J and K address the first two:
+
+- J: the GT911 binding takes `GEA_EMBEDDED_TOUCH_TASK_STACK_EXTERNAL` exactly as the FT3168
+  binding does (object in PSRAM, heap task stack there, static members compiled out; the INT
+  ISR is installed without `ESP_INTR_FLAG_IRAM`, so touching the PSRAM object from it is
+  fine). Branch `gt911-external-task-stack` in `targets-track-j/`.
+- K: the shipped `gea_ui_state_external.lf` named `libmain.a` objects from when the app's
+  generated code compiled into main; the compiler now emits one content-hashed object into
+  `libgea_active_geatsc.a` (the kit's older compiler had none of it in DIRAM at all). A
+  fourth mapping sends that archive's `.bss` to external RAM; ldgen only existence-checks
+  entries more specific than an archive, so a build without the archive is unaffected.
+  Branch `ui-state-external-app-archive` in `targets-track-k/`.
+
+Both are stacked on `targets-pedal-43b/` with A and built into `.gea/build-43b`
+(`build-43b-trackAJK.log`), not flashed: the Mac's system volume filled up during the
+session (364 MB free of 466 GB, swap at 4.4 of 5 GB), ldgen and then the final link spent
+tens of minutes in disk wait. After the disk is freed: flash, capture the boot, and read
+`before NAM load` again. Expected: another 9.3 KB static, taking the image to about 8 KB
+over the kit, the rest being the engine version and the RGB driver. If the graph still
+misses then, the lever is the pedal's own placement (`coyopedal/docs/MEMORY.md`) rather than
+the board.
+
+Images: `build/pedalboard-43b.bin` is the track A image, `pedalboard-43b-before-trackA.bin`
+the morning's; the kit's `build/pedalboard.bin` is restored.
+
+Tried and reverted: removing the stopgap from the two LAFVIN definitions. The kit's bench
+build is `npx gea build --board lafvin` on the stock packages, which lack track A, and a
+codec-less definition does not build there. The kit waits for the release.
+
+### The pedal's audio boot places on the 4.3B (2026-10-16, 22:05)
+
+The stacked image (A + J + K) linked at 196,713 bytes of DIRAM (145,047 left; 8,812 over
+the kit, which is the engine version and the RGB driver), 3,266,128 bytes. Flashed over USB
+and reset with the capture script: `before NAM load: internal free=67404 largest=31744`,
+the history rings all place (`NAM bank arena returned 5680 unused bytes`), `profile
+volum-herbert-1-v30 loaded, 48616 bytes`, `factory preset A2-Full model loaded and calibrated
+in 3873 ms`, the compact reverb takes 38,884 bytes internal with 16,432 left, `effects ready`,
+and then `starting USB audio host for the attached UAC2 interface; internal free=12332
+largest=3840`. The next thing the Mac saw was the USB-Serial/JTAG device vanish: the pedal
+took the port for the host, which is the audio boot working on this board for the first
+time. GT911 and the generated UI object are at 2,631 and 0 bytes of DIRAM in that map.
+
+Where the bench stands: the pedal is in audio mode on the 4.3B, radios off, console gone.
+The way back is the Setup screen's "Maintenance mode" control on the panel (no footswitch,
+no BOOT hold on this board); the measurement (`effects-profile` over the API with the panel
+scanning) then needs the Mac to reach the pedal on the LAN, which still needs the Local
+Network permission or sudo. Both are the user's hands. The Mac's system disk is also full
+(364 MB free at one point, 1.4 GB later), which turned a two-minute link into twenty.
+
+| image | DIRAM | internal free before NAM load | largest | result |
+| --- | ---: | ---: | ---: | --- |
+| morning (stopgap) | 215,793 | 52,952 | 26,624 | 13 rings unallocated |
+| track A | 205,801 | 62,416 | 31,744 | 9 rings unallocated |
+| A + J + K | 196,713 | 67,404 | 31,744 | graph placed, audio host started |
+| kit (LAFVIN, for reference) | 187,901 | | | audio boot works |
+
+### Track A, second shape: the codec is not the policy (2026-10-16, 23:00)
+
+On the panel the user saw the UI scroll horizontally and stutter, wrapping at one point, and
+the Setup button ignore touch; taps anywhere did nothing. Both are new with the stacked image
+and both trace to the same thing: the first shape of track A turned the app's audio
+capability off for a codec-less board, and the base target uses
+`GEA_EMBEDDED_APP_USES_AUDIO` for more than the codec. In `display.cpp` the parallel render
+worker blocks on a notification between jobs when the app uses audio and spin-waits up to
+4 ms otherwise; the join on the main core likewise. So the pedal was built as a non-audio
+app: both cores spin around every frame, on a pedal whose DSP already has 87% of both. The
+pedal's own priorities (runtime 17, frame 18, touch 17) were unchanged, which is why the
+first read of the log looked fine. The scanout drift is the same load: the RGB DMA reads
+the framebuffer straight from PSRAM (bounce buffers off, for lack of internal RAM) and
+underruns when the cores saturate the bus.
+
+Second shape: the CLI only emits `GEA_CUSTOM_TARGET_HAS_AUDIO` in `target.cmake`, and the
+base target sets `GEA_EMBEDDED_BOARD_HAS_CODEC` from it. The codec sources (ES8311, the
+audio runtime, `esp_driver_i2s`, `esp_codec_dev`, `GEA_BOARD_HAS_SPEAKER=1`) need the
+capability and the codec; the stub build of an audio app keeps
+`GEA_EMBEDDED_APP_USES_AUDIO=1` beside `GEA_EMBEDDED_AUDIO_UNUSED=1`. The CLI's capability
+override and its helper are gone; the tests follow. Rebuilt with the 4.3B block at
+`cssDevicePixelRatio` 1.5 as asked (logical 533x320; touch scales with it, since the
+hit areas are the same logical boxes).
+
+Also learned the hard way: the pedal's audio boot takes the USB-C port for the host, and
+if that port is on the Mac the Mac's USB controller stalls (keyboard dead, display blank)
+until the cable is pulled. Flash, unplug, then power the board from elsewhere. To flash a
+board that is in audio mode, hold BOOT while plugging it in: the ROM's download mode is a
+strapping read at reset and works on this board even though GPIO 0 is a panel line.
+
+### Scanout drift: VSYNC restart, the clock the panel wants, 2x (2026-10-17, morning)
+
+With the second shape of track A flashed, the picture still crept to the right on every tap
+and wrapped, and touch was "unpredictable": the hit boxes had not moved, the picture had.
+The scanout reads the framebuffer straight from PSRAM (no internal RAM for bounce buffers),
+code and rodata execute from PSRAM too (`CONFIG_SPIRAM_XIP_FROM_PSRAM`), and a render's
+PSRAM burst starves the DMA; the pixel clock keeps going and the frame stays displaced.
+
+Three changes, two of which survived:
+
+- `CONFIG_LCD_RGB_RESTART_IN_VSYNC=y` in the pedal's `sdkconfig.defaults`: the driver
+  restarts the transfer at each VSYNC, so an underrun is a one-frame tear instead of a
+  permanent shift. Kept. Result on the panel: a tap causes visible horizontal wiggle that
+  settles in a few seconds; several taps in quick succession, especially during the
+  wiggle, build it up to a hard shake by about the third, then it settles again and the UI
+  keeps working. Touch answers where things are drawn.
+- `pclkHz` 12 MHz instead of 16: the driver reports ready, the UI renders at 15 fps, and
+  the panel shows solid white. The panel does not lock below its rated clock. Reverted;
+  the pedal's definition says why.
+- `cssDevicePixelRatio` 2 (400x240 logical): "a fair size", the user's words. Kept.
+
+Where the remaining wiggle can go, in order of plausibility: a dirty-rectangle flush
+instead of the full 768 KB canvas-to-framebuffer copy per frame (`disp=64.9` ms of the
+65 ms frame is that copy); the binding's single-framebuffer mode (draw into the scanout
+buffer, no copy, tearing instead of bandwidth); bounce buffers if 64 KB of internal RAM can
+be found (the graph leaves 16 KB); PSRAM at 120 MHz (experimental on the S3, flash must
+follow). The first is a Gea question, the rest are board-block switches.
+
+Bench technique that made this session possible: a board in audio mode has no console and
+no safe USB connection to the Mac, so to see one boot the next boot is flagged from the
+Mac. An NVS image with namespace `coyopedal_mode`, key `maintenance` u8 1 (generated with
+IDF's `nvs_partition_gen.py` from a three-line CSV, written at 0x9000 with esptool) makes
+the next boot a maintenance boot; the flag is one-shot, the boot after it is audio again.
+The capture scripts (`capture_boot.py`, `capture_after_reset.py`) live in
+`tmp/session-scratch/`; esptool is driven directly with `--after no-reset` so a flashed
+board stays in its bootloader until unplugged, and never becomes a host on the Mac's port.
+Oddity not explained: from the ROM bootloader state, every reset issued over the
+USB-Serial/JTAG lines landed in download mode again (`boot:0x0`), while the same sequence
+from a running app boots normally; the board's own RESET button boots normally.
+
+### The board's death (2026-10-19, after midnight)
+
+The 4.3B was being wired for VIN and a battery charger with the USB cable still plugged in.
+A click, not a capacitor, and since then the board flashes its LED and panel rapidly at
+power-on, with the panel detached as well, and no button combination at power-on changes it.
+Read as a power-circuit part gone; to fix later or salvage. The panel (800x480 RGB, GT911,
+40-pin FPC) came off working and is kept for a replacement board.
+
+What it pauses: every hardware check in the 4.3B sprint item, the footswitch wiring on DI0,
+the effects-profile run with the panel scanning. What it does not pause: the fork commits
+for tracks A, J and K and their PRs, which are host work. The display work moves to the
+generic S3 devkits with bare SPI panels (`docs/displays.md`).
