@@ -39,6 +39,12 @@ Per fork, three kinds of branch:
    the branch to push to the fork for backup and for building from another machine, and
    the one `docs/build-environment.md`'s bench commands point at. It never becomes a PR.
 
+The git config's fast-forward-only merge setting is the guard for the topic branches: a
+topic can never pick up a merge commit by accident, so a PR opened from one is always
+linear. The integration branches are the one place merge commits belong, and they are made
+with an explicit `git merge --no-ff <topic>`, which overrides the setting for that merge
+only.
+
 Worktrees follow the branches: one per topic in flight, one per integration branch, named
 `<repo>-<branch>`; `git worktree list` is the inventory, and `.gitignore` covers them by
 pattern. Remove a topic's worktree when its PR merges; the integration branch then drops
