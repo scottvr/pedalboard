@@ -280,9 +280,11 @@ boot needs no further purchase; the 5-DSI-TOUCH-A (sprint item 10) is its panel.
   Flashed to the kit's dev board and booted (`tmp/boot-lafvin-20261023.log`): model loaded
   and calibrated in 4,033 ms, USB host up, footswitch armed, audio mode, 13,724 bytes
   internal free after bring-up. Host tests pass on the merge (35 audio, three USB fixtures,
-  loopback probe). **Left before any pedal PR:** the MOMIX streaming check on this image (no
-  interface was on the OTG port when it booted); that is the validation the PR's
-  hardware-testing statement rests on. Divergence: 34 commits, 29 files, mostly `src/native`
+  loopback probe). MOMIX streaming on this image, 2026-10-23 evening
+  (`tmp/stream-lafvin-20261023.log`): twelve consecutive 5 s windows, capture and playback
+  counts equal in every one (+240,576 to +240,768 frames), silence 0, err 0, rings steady,
+  C0 and C1 at 86 to 87% of the 1,333 us block. The same picture as 2026-10-10 on the old
+  stack: **the pedal is validated on the stack upstream pins.** Divergence: 34 commits, 29 files, mostly `src/native`
   and the USB tests.
 - **PR dependency notes.** The UAC1, WPA3, status-NaN and footswitch-setting PRs depend on
   nothing upstream and can go first. The 4.3B board definition depends on Gea PRs being
