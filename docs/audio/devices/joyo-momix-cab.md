@@ -102,10 +102,15 @@ unchecked; the cable for section 5 arrived 2026-10-13.
       at or below its post-connect default, no + presses. The volume buttons move the level
       about a decibel a press and the setting outlived a software reboot of the pedal. Rob
       Murru's firmware, which removes the monitor, is the clean way to run this test.
-      Confirming clean window, 05:31: the cable plugged in after the host installed, so the
-      loop had nothing to build on; 0 clipped, 0 busy bursts, 0 noise onsets, 7 bursts locked:
+      Confirming clean window, 05:31, cable in from the start and unplugged for a few bursts
+      in the middle (hence 7 locked of about 11): 0 clipped, 0 busy bursts, 0 noise onsets:
       1,470 frames (30.6 ms) first, 1,638 (34.1 ms) last, +56.5 ppm, return -21.2 dBFS, the
-      line between bursts at -25.7 dBFS. 645 glitches counted, every one at a burst edge in
+      line between bursts at -25.7 dBFS, the loop's tail decaying instead of ringing up. Why
+      this window stayed under unity when the one before it at the same -21 dBFS return did
+      not: ten - presses between them moved the master by less than the readout resolves, and
+      that was enough. The loop sits at unity; a fraction of a decibel decides it, so a pad in
+      the cable (a pot as a divider, 6 to 10 dB) is required for repeatable runs, not optional.
+      645 glitches counted, every one at a burst edge in
       pairs 400 frames apart at the ten-second cadence and none inside a burst: the monitor's
       echo landing on the edges, which the host test's clean case does not have. A guard band
       around the edges is the probe refinement to make; the steady-state count is 0.
