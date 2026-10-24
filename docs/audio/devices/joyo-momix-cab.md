@@ -19,9 +19,9 @@ heartbeat_window_s: 5
 stream_errors: 0
 missed_blocks: "0/0"
 core_load_pct: "87/87"
-latency_ms: "by ear"
-loopback_glitches_per_min:
-drift_ppm: "n/a from the heartbeat (fixed-size IN); loopback pending"
+latency_ms: "30 to 37"     # loopback round trip incl. the pedal rings, 2026-10-24
+loopback_glitches_per_min: 0   # 2026-10-24, two 120 s windows, after the clipped onset
+drift_ppm: "+54"           # loopback probe 2026-10-24, two windows: +53.5 and +55.8
 direct_monitor: "always on (cab-simmed, in the device DSP)"
 verdict: "works"
 tested_on: "2026-10-10"
