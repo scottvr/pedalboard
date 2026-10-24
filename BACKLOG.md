@@ -45,9 +45,12 @@ Wi-Fi tail (one bench visit):
    full scale. The counter exists since 2026-10-13: `AUDIO TRY 300 LOOPBACK` (pedal commit
    `7f3cbcb`), host-tested; it also measures the round-trip latency and the drift. **Done
    2026-10-24, 02:00 to 05:10** (see Done): 30 to 37 ms round trip, +54 ppm, 0 glitches after
-   the onset, on the Oct 14 image; numbers and the method in the MOMIX sheet. Left: one clean
-   confirming window with the device volume lowered first, and the same run on the 0.1.108
-   image once its footswitch regression is understood.
+   the onset, on the Oct 14 image; the clean confirming window came at 05:31 with the cable
+   plugged in after the host installed (0 clipped, 7 bursts, 30.6 to 34.1 ms, +56.5 ppm).
+   Numbers and the method in the MOMIX sheet. Left: the probe counts the monitor's echo at
+   each burst edge as glitches (645, all at edges, none inside), so a guard band around the
+   edges is the next probe change, with the host test extended to a burst-plus-echo case;
+   and the same run on the 0.1.108 image once its footswitch regression is understood.
 
 The 4.3B as a pedal home (decided 2026-10-16, after the gift ran):
 
@@ -349,7 +352,9 @@ boot needs no further purchase; the 5-DSI-TOUCH-A (sprint item 10) is its panel.
   and +55.8 ppm (the stock capture endpoint is asynchronous, so the device crystal shows,
   which the sheet had predicted away as 0 ppm); 0 glitches after the clipped onset in about
   80 s analyzed each. Also learned: after a maintenance boot the MOMIX needs a replug before
-  the host sees it; the volume buttons are the headphone master, about 1 dB a press,
+  the host sees it; plugging the cable in after the host installs keeps the regenerative
+  loop from building before the first burst (the clean window); the volume buttons are the
+  headphone master, about 1 dB a press upward and no lower than the connect-time level,
   persisting across the pedal's software reboot; `gea flash --image` wants a launcher build,
   so a saved image is flashed by copying it over `build/pedalboard.bin`.
 

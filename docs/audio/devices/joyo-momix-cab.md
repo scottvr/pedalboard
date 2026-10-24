@@ -20,8 +20,8 @@ stream_errors: 0
 missed_blocks: "0/0"
 core_load_pct: "87/87"
 latency_ms: "30 to 37"     # loopback round trip incl. the pedal rings, 2026-10-24
-loopback_glitches_per_min: 0   # 2026-10-24, two 120 s windows, after the clipped onset
-drift_ppm: "+54"           # loopback probe 2026-10-24, two windows: +53.5 and +55.8
+loopback_glitches_per_min: 0   # 2026-10-24, three 120 s windows, inside the bursts; edge artifacts noted in section 5
+drift_ppm: "+54 to +56"    # loopback probe 2026-10-24, three windows: +53.5, +55.8, +56.5
 direct_monitor: "always on (cab-simmed, in the device DSP)"
 verdict: "works"
 tested_on: "2026-10-10"
@@ -102,6 +102,13 @@ unchecked; the cable for section 5 arrived 2026-10-13.
       at or below its post-connect default, no + presses. The volume buttons move the level
       about a decibel a press and the setting outlived a software reboot of the pedal. Rob
       Murru's firmware, which removes the monitor, is the clean way to run this test.
+      Confirming clean window, 05:31: the cable plugged in after the host installed, so the
+      loop had nothing to build on; 0 clipped, 0 busy bursts, 0 noise onsets, 7 bursts locked:
+      1,470 frames (30.6 ms) first, 1,638 (34.1 ms) last, +56.5 ppm, return -21.2 dBFS, the
+      line between bursts at -25.7 dBFS. 645 glitches counted, every one at a burst edge in
+      pairs 400 frames apart at the ten-second cadence and none inside a burst: the monitor's
+      echo landing on the edges, which the host test's clean case does not have. A guard band
+      around the edges is the probe refinement to make; the steady-state count is 0.
 
 ## 6. Latency and signal path
 
