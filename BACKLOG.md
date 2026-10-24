@@ -334,6 +334,17 @@ boot needs no further purchase; the 5-DSI-TOUCH-A (sprint item 10) is its panel.
 
 ### Docs and tooling
 
+- **Interface profiles, a bench side programme (idea 2026-10-24).** While an interface is on
+  the bench anyway, measure the whole of it, not just what the pedal needs, and fill section 6
+  of its sheet: noise floor with the input shorted, SNR and THD+N at 1 kHz, frequency response
+  from a sweep, input clip point against a known level, output level, and the round trip on the
+  Mac. A host-side script (`tools/profile_interface.py`: sounddevice plus numpy, one run per
+  interface, prints the sheet's values and writes the WAVs) does this with the interface on the
+  Mac, so it covers the ones the pedal will never host (VoiceLive 3, VoiceLive Rack, MOTU 828,
+  GR-55) with the same numbers as the MOMIX and gives the pedal's loopback probe a reference
+  to be checked against. Secondary: a sheet's measurement sections, worked one interface at a
+  time, no deadline. First subject the TC Helicon VoiceLive 3, newly on the list, because its
+  real specs are the curiosity that raised the idea.
 - Branch model adopted 2026-10-23 (`docs/branching.md`); topics rebased, H and I cut, K
   dropped, PR branches pushed the same day. Left: cut tracks B and C as topic branches off
   upstream main, so `lafvin-composed-display` becomes a pure integration branch; push the

@@ -68,6 +68,7 @@ device is invisible to the host; only the loopback test below can see it.
 | Scarlett (2nd gen+) | UAC2 class compliant; should work if its Full Speed config has 48 kHz duplex                                 |
 | MOTU 828 (model?)   | 828es/828x have class-compliant modes, mk3 Hybrid needs a driver; 28 channels do not fit a Full Speed packet |
 | VoiceLive Rack      | 2-channel 16-bit 44.1/48 kHz, works on iPad, so class compliant and almost certainly UAC1                    |
+| VoiceLive 3         | On hand (noted 2026-10-24). Streams stereo to a computer over USB; believed class compliant like the Rack. Not assessed: dump its descriptors on the Mac first (section 1 of the sheet), then profile it with the others |
 | Rig Kontrol 3       | Proprietary NI driver, not class compliant                                                                   |
 | GR-55               | Roland driver for audio, 44.1 kHz; refused by the 48 kHz rule                                                |
 
