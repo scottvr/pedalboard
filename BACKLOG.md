@@ -43,8 +43,11 @@ Wi-Fi tail (one bench visit):
 3. Cable arrived 2026-10-13 (TRS 1/4" to 1/8"): loopback glitch count and the drift experiment
    (`docs/audio/momix.md` "MOMIX drift", `docs/audio/usb-audio.md` "Per-device timing"). Keep the input below
    full scale. The counter exists since 2026-10-13: `AUDIO TRY 300 LOOPBACK` (pedal commit
-   `7f3cbcb`), host-tested; it also measures the round-trip latency and the drift. First
-   hardware run is this item.
+   `7f3cbcb`), host-tested; it also measures the round-trip latency and the drift. **Done
+   2026-10-24, 02:00 to 05:10** (see Done): 30 to 37 ms round trip, +54 ppm, 0 glitches after
+   the onset, on the Oct 14 image; numbers and the method in the MOMIX sheet. Left: one clean
+   confirming window with the device volume lowered first, and the same run on the 0.1.108
+   image once its footswitch regression is understood.
 
 The 4.3B as a pedal home (decided 2026-10-16, after the gift ran):
 
@@ -336,6 +339,19 @@ boot needs no further purchase; the 5-DSI-TOUCH-A (sprint item 10) is its panel.
 - Rotate the API key that was in `~/.zshrc` (user's item).
 
 ## Done
+
+- 2026-10-24: the loopback probe's first hardware run, after a night of finding the loop's
+  band. At the default -12 dBFS tone the MOMIX returned -37 to -42 dBFS, under the probe's
+  -34 dBFS floor; `LEVEL 2` put the return at -20 to -26 dBFS and the probe locked eight
+  bursts a window. Above a return of about -20 dBFS the stock firmware's always-on monitor
+  turns the cable into a regenerative loop that rings to full scale between bursts. Two usable
+  windows: round trip 1,449 to 1,594 frames first burst, 1,645 to 1,776 last; drift +53.5
+  and +55.8 ppm (the stock capture endpoint is asynchronous, so the device crystal shows,
+  which the sheet had predicted away as 0 ppm); 0 glitches after the clipped onset in about
+  80 s analyzed each. Also learned: after a maintenance boot the MOMIX needs a replug before
+  the host sees it; the volume buttons are the headphone master, about 1 dB a press,
+  persisting across the pedal's software reboot; `gea flash --image` wants a launcher build,
+  so a saved image is flashed by copying it over `build/pedalboard.bin`.
 
 - 2026-10-08: kit evaluated; pin map; decision for the headless-first route; generic UAC1
   discovery written and host-tested against the custom-firmware fixture.
