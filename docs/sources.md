@@ -36,6 +36,8 @@ JOYO MOMIX CAB:
 - https://robmurru.wordpress.com/2026/02/24/joyo-momix-cab-reverse-engineering-part-2/
 - https://robmurru.wordpress.com/2026/05/31/joyo-momix-cab-reverse-engineering-part-3/
 - https://github.com/robmurru/Joyo-MOMIX-CAB-Custom-Firmware (and issues/1)
+- JieLi AC6926A4 datasheet: a local copy in `docs/dnd/jieli_ac6926a4.pdf` (the directory is
+  gitignored; do-not-distribute material lives there and never reaches a remote)
 - https://github.com/kagaimiq/jl-uboot-tool and
   https://github.com/kagaimiq/jl-uboot-tool/blob/main/docs/how-to-enter-uboot.md
 - https://kagaimiq.github.io/jielie/chips/chip-marks.html
