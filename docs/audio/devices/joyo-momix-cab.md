@@ -118,7 +118,13 @@ unchecked; the cable for section 5 arrived 2026-10-13.
 ## 6. Latency and signal path
 
 - [x] By ear: passes (2026-10-10).
-- [ ] Measured round trip with `tools/null_test.py --bypass`: not done.
+- [ ] Measured round trip with `tools/null_test.py --bypass`: not done. It would attribute the
+      loopback's 30 to 34 ms: the pedal's share is about 270 frames (under 6 ms: input ring held
+      at a packet plus a block, one block in the DSP, output ring at two packets plus a block,
+      the `rings=48/160` of the heartbeat), so about 25 ms of the round trip sit in the MOMIX's
+      own DAC and ADC buffering under stock firmware. For a player that is the gap between the
+      dry monitor copy (a few ms) and the processed copy (about 30 ms); Rob Murru's firmware may
+      buffer differently and should be measured the same way.
 - [x] Direct monitoring: always on, cab-simmed, in the device's DSP; cannot be removed in
       hardware. Only matters if the MOMIX headphone jack becomes the pedal's output, which is
       what Rob Murru's firmware is for.
