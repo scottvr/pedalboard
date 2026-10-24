@@ -343,7 +343,7 @@ boot needs no further purchase; the 5-DSI-TOUCH-A (sprint item 10) is its panel.
   Mac, so it covers the ones the pedal will never host (VoiceLive 3, VoiceLive Rack, MOTU 828,
   GR-55) with the same numbers as the MOMIX and gives the pedal's loopback probe a reference
   to be checked against. Secondary: a sheet's measurement sections, worked one interface at a
-  time, no deadline. First subject the TC Helicon VoiceLive 3, newly on the list, because its
+  time, no deadline. First subject the TC Helicon VoiceLive 3 Extreme, newly on the list, because its
   real specs are the curiosity that raised the idea.
 - Branch model adopted 2026-10-23 (`docs/branching.md`); topics rebased, H and I cut, K
   dropped, PR branches pushed the same day. Left: cut tracks B and C as topic branches off
