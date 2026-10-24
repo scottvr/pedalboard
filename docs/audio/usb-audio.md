@@ -73,7 +73,7 @@ device is invisible to the host; only the loopback test below can see it.
 
 ## Still open
 
-1. **Loopback glitch test**: written 2026-10-13 (pedal commit `7f3cbcb`) as `AUDIO TRY <s> LOOPBACK [HZ <f>] [LEVEL
+1. **Loopback glitch test**: run on hardware 2026-10-24, results in the MOMIX sheet (`devices/joyo-momix-cab.md`, sections 4 and 5): 30 to 37 ms round trip, +54 ppm, 0 glitches after the onset; the stock monitor makes the loop regenerative above a return of about -20 dBFS. Written 2026-10-13 (pedal commit `7f3cbcb`) as `AUDIO TRY <s> LOOPBACK [HZ <f>] [LEVEL
    <dB>]` (`src/audio/loopback_probe.hpp`, host test `tests/loopback_probe_test.cpp`), not yet
    run on hardware. The DSP steps aside; a 997 Hz tone at -12 dBFS goes out in ten-second
    bursts and the return is checked with the two-sample recurrence `x[n] = 2 cos(w) x[n-1] -

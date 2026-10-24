@@ -79,15 +79,29 @@ unchecked; the cable for section 5 arrived 2026-10-13.
       always 240000 and any drop or duplicate inside the device is invisible to the host.
 - [x] Clocks: one crystal, free-running; the device applies no rate adaptation in stock
       firmware (Rob Murru's custom firmware skips a 32-sample block every 6.7 s to absorb about
-      100 ppm; see `../momix.md`, "MOMIX drift").
+      100 ppm; see `../momix.md`, "MOMIX drift"). Measured 2026-10-24 by the loopback probe:
+      **+53 to +56 ppm** against the kit's S3 (the stock capture endpoint is asynchronous, so
+      the device's crystal sets the capture rate and the round trip creeps by about 190 frames
+      over a two-minute window). The earlier expectation of 0 ppm was wrong: no adaptation
+      means the drift is visible, not absent.
 
 ## 5. Loopback glitch test
 
-- [ ] Not run. The 1/4" to 1/8" TRS cable arrived 2026-10-13 and `AUDIO TRY 300 LOOPBACK`
-      was written the same day (host-tested, not yet on hardware). MOMIX headphone out to the
-      guitar in; keep the return below full scale. Expected if the stock firmware applies no
-      adaptation: 0 glitches and 0 ppm; the custom firmware would read about -100 ppm with a
-      glitch every 6.7 s.
+- [x] Run 2026-10-24 (Oct 14 image `7f3cbcb`, kit dev board, stock MOMIX, 1/4" TS to 1/8" TRS
+      cable from the headphone out to the guitar in). Two usable 120 s windows, both with
+      `AUDIO TRY 120 LOOPBACK LEVEL 2` (tone at -2 dBFS; at the default -12 dBFS the return
+      sat at -37 to -42 dBFS, under the probe's -34 dBFS floor, and nothing locked):
+      round trip 1,449 to 1,594 frames (30.2 to 33.2 ms) on the first burst, 1,645 to 1,776
+      (34.3 to 37.0 ms) on the last, drift +53.5 and +55.8 ppm, **0 glitches in about 80 s of
+      analyzed frames once the onset settled** (the counted 700 to 4,000 were clipped samples
+      in the first 50 ms or after a level change, not drops). The latency includes the pedal's
+      rings. Caveat that shaped the night: the stock firmware's always-on monitor plus the
+      loopback cable is a regenerative loop; above a device volume that returned the tone at
+      about -20 dBFS it oscillated to full scale between bursts (`not_quiet`, `waiting` at 0
+      dBFS). The usable band is a return of -26 to -30 dBFS: tone at -2 dBFS, device volume
+      at or below its post-connect default, no + presses. The volume buttons move the level
+      about a decibel a press and the setting outlived a software reboot of the pedal. Rob
+      Murru's firmware, which removes the monitor, is the clean way to run this test.
 
 ## 6. Latency and signal path
 
