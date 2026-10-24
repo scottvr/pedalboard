@@ -63,7 +63,9 @@ with `gh repo clone scottvr/<name>`, which adds the `upstream` remote.  When the
 - 2026-10-23: the pedal fork is merged with upstream and builds on the Geastack stack upstream
   pins (cli and targets 0.1.108, core 0.1.49) once one define collision in targets 0.1.108 is
   worked around (`BACKLOG.md`, track L); the headless image boots on the kit's dev board and
-  streams with the MOMIX as before (counts equal every window, no errors, 87% of the block).
+  streams with the MOMIX as before (counts equal every window, no errors, 87% of the block),
+  but its BOOT footswitch is dead and a press resets the chip, which the Oct 14 image on the
+  same board does not do: a regression to find before the stack moves (`BACKLOG.md`).
 - The board has been seated back in the carrier for these runs after some minor cosmetic surgeery and a bit of hobbling,
   with the native USB OTG port hosting the MOMIX; the display, touch and speaker need the upstream Geastack work tracked
   in `BACKLOG.md` ("Upstream tracks") before they can be used. The design is in `docs/display.md`.

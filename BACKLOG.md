@@ -284,7 +284,31 @@ boot needs no further purchase; the 5-DSI-TOUCH-A (sprint item 10) is its panel.
   (`tmp/stream-lafvin-20261023.log`): twelve consecutive 5 s windows, capture and playback
   counts equal in every one (+240,576 to +240,768 frames), silence 0, err 0, rings steady,
   C0 and C1 at 86 to 87% of the 1,333 us block. The same picture as 2026-10-10 on the old
-  stack: **the pedal is validated on the stack upstream pins.** Divergence: 34 commits, 29 files, mostly `src/native`
+  stack: **the pedal streams on the stack upstream pins.** But not validated whole: on that
+  image the BOOT footswitch does nothing (no tap line) and a press resets the chip with a
+  power-on reset, while the Oct 14 image flashed back onto the same board answers the same
+  button with a clean hold, software reset and maintenance boot (`tmp/screen-lafvin.log`,
+  `tmp/ab-old-image-lafvin-20261023.log`). A regression of the 0.1.108 stack on this board;
+  cause unknown. The base's new button service compiles to nothing here (no button table)
+  and its launcher-button code is unchanged, so neither is it. Next: flash the new image with
+  no serial port open on the Mac and hold BOOT, to take the CH343 auto-reset circuit out of
+  the picture; then diff the two images' GPIO0 setup (`gpio_dump_io_configuration` over the
+  console, or the linker maps).
+- **Loopback probe, first hardware attempts 2026-10-23 evening** (Oct 14 image, cable from the
+  MOMIX headphone out to its instrument in): three `AUDIO TRY 120 LOOPBACK` windows and one
+  `AUDIO MODE` switch all booted the audio engine by software reset, installed the USB host
+  (HCD FIFO line present) and saw **no device for the whole window**: `connected=no host=yes
+  captured=0 played=0`, probe left `armed`. Every hard reset earlier in the evening had the
+  MOMIX enumerated within two seconds; a hard reset at 22:12 did not, so by then the MOMIX
+  itself had stopped answering, and the evening ended before a confirmed power cycle of it.
+  Open: whether the MOMIX needs its VBUS cycled after sitting on an idle port through a
+  maintenance boot (the AMOLED board's AXP2101 would do that at boot; the devkit's OTG 5 V is
+  passive), or whether the S3's OTG port does not signal after a software reset here.
+  Upstream's USB notes say their interfaces do enumerate after a soft reset of the host.
+  Logs: `tmp/loopback-run*-lafvin-20261023.log`, `tmp/audiomode-lafvin-20261023.log`.
+- Also that evening: the LAFVIN reproduced the "dead 4.3B" symptom (rapid LED flashing) from a
+  bad hub port; a PSRAM-init reboot loop traced to the cat on the cable pile; the SD card in
+  the kit's slot timed out on one boot and mounted on the next. Divergence: 34 commits, 29 files, mostly `src/native`
   and the USB tests.
 - **PR dependency notes.** The UAC1, WPA3, status-NaN and footswitch-setting PRs depend on
   nothing upstream and can go first. The 4.3B board definition depends on Gea PRs being
