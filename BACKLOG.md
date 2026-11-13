@@ -216,6 +216,9 @@ tags in cli and targets until that build passes. Build commands in
   I2S lines (`docs/kit.md`, "The audio module").
 - Tracks F and G are open as PRs (table above); when #5 merges, rebase #6 onto main so it
   shows one commit. Fold review feedback back into `docs/waveshare-43b.md`.
+  Deadline for upstream: if the three PRs get no merge or maintainer response after the
+  2026-11-12 refresh, stop waiting and hard-fork what the pedal needs (the `pedal-43b`
+  integration branches already carry all of it).
 - Two Waveshare ESP32-P4 boards arrived 2026-10-13: an ESP32-P4-WIFI6-POE-ETH (ES8311 codec,
   Ethernet with PoE, C6 with an IPEX antenna) and an ESP32-P4-Module-DEV-KIT (four USB-A ports,
   Ethernet). Both panel-less, both in `docs/p4.md`. They belong to the next project, below.
@@ -356,6 +359,18 @@ boot needs no further purchase; the 5-DSI-TOUCH-A (sprint item 10) is its panel.
 
 ## Done
 
+- 2026-11-12: PR refresh after a quiet fortnight. Upstream is active (targets and core moved
+  today) but has not touched the PRs. cli#7: every CodeRabbit thread resolved (the expander
+  card-select on a shared QSPI host, `3ad38fa`, 2026-11-08); the remaining Docstring Coverage
+  warning answered with one-line JSDoc on the four touched functions (`d51bc7c`; upstream has
+  one docstring in all of `src/`, so this is CodeRabbit's default, not house style). targets:
+  main fast-forwarded to `e61010a` (CrowPanel RGB triple buffering, a large `rgb_panel.cpp`
+  rewrite); all seven topics rebased cleanly (tags `pre-rebase-1112-*`); track I still needed,
+  since upstream defines no RGB `flushOdometerRead` and the new fused path still counts through
+  `addFlushStats`. #5 now `77896e5`, #6 `b78a71c`; targets#5 was never reviewed (CodeRabbit
+  rate-limited on 2026-10-23). Both integration branches rebuilt and differ from before only by
+  upstream. All three PRs mergeable, blocked only on maintainer approval. core main
+  fast-forwarded to `371cb38` (core 0.1.50).
 - 2026-10-24: the loopback probe's first hardware run, after a night of finding the loop's
   band. At the default -12 dBFS tone the MOMIX returned -37 to -42 dBFS, under the probe's
   -34 dBFS floor; `LEVEL 2` put the return at -20 to -26 dBFS and the probe locked eight
