@@ -111,7 +111,8 @@ Display (tracks B and C below, then the bench):
    MOSI pad to GPIO 16 and its D/C pad to GPIO 17, the pins the display definition names
    (test-fitted 2026-10-19, `docs/kit.md` step 3). Waits on solder: the rework station and
    solder are at the house, next visit Sunday 2026-10-26; solder for the apartment's Pinecil
-   ordered 2026-10-23.
+   ordered 2026-10-23. **Jumpers soldered by 2026-11-13** (new helping hands); not yet powered
+   or tested. Next: continuity and no shorts to the neighbours, then item 6.
    SCK 21 and CS 47 stay as wired; GPIO 3, 46 and 15 stay with the ES8311 stopgap. The
    carrier routes no backlight or reset GPIO to the panel: BL is always on, RST follows EN.
 5. Done 2026-10-12 (host side): `boards/esp32-s3-lafvin-multimedia-2.8-display.json` with
