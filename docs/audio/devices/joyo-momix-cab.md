@@ -85,6 +85,18 @@ unchecked; the cable for section 5 arrived 2026-10-13.
       over a two-minute window). The earlier expectation of 0 ppm was wrong: no adaptation
       means the drift is visible, not absent.
 
+      **note**: A ood write up  including a diff of the fix which includes the calculation used at https://github.com/robmurru/Joyo-MOMIX-CAB-Custom-Firmware/issues/1
+
+      So if drift is ~54.5ppm for our unit, the interval would be
+      1 / (54.5 × 1e-6)
+      so,
+      
+      ```
+      // repo: robmurru/Joyo-MOMIX-CAB-Custom-Firmware
+      // file; src/apps/cpu/audio/ladc.c
+      #DEFINE USB_MIC_SKIP_INTERVAL = 5459 
+      ```
+
 ## 5. Loopback glitch test
 
 - [x] Run 2026-10-24 (Oct 14 image `7f3cbcb`, kit dev board, stock MOMIX, 1/4" TS to 1/8" TRS

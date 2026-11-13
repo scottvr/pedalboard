@@ -216,8 +216,9 @@ tags in cli and targets until that build passes. Build commands in
   I2S lines (`docs/kit.md`, "The audio module").
 - Tracks F and G are open as PRs (table above); when #5 merges, rebase #6 onto main so it
   shows one commit. Fold review feedback back into `docs/waveshare-43b.md`.
-  Deadline for upstream: if the three PRs get no merge or maintainer response after the
-  2026-11-12 refresh, stop waiting and hard-fork what the pedal needs (the `pedal-43b`
+  The maintainer asked for the additional targets himself before the first PR went in, so
+  give the 2026-11-12 refresh a little time, then ask him directly. Only if that gets no
+  merge or answer, stop waiting and hard-fork what the pedal needs (the `pedal-43b`
   integration branches already carry all of it).
 - Two Waveshare ESP32-P4 boards arrived 2026-10-13: an ESP32-P4-WIFI6-POE-ETH (ES8311 codec,
   Ethernet with PoE, C6 with an IPEX antenna) and an ESP32-P4-Module-DEV-KIT (four USB-A ports,
