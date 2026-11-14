@@ -121,8 +121,9 @@ What it means for the pedal:
   header gives 21, 14, 3 and 2 for real switches.
 - **Composer:** the panel needs an ILI9341 path beside track B's ST7789 one (same SPI shape,
   different init sequence; ESP-IDF has an `esp_lcd` ILI9341 component); the FT6336 binding takes
-  the routed INT and reset; ES8311 and SDMMC are already composable. The card is SDMMC, not SPI,
-  so track G is not needed here.
+  the routed INT and reset; ES8311 is already composable, and the card works through the composer's
+  `sdmmc-1bit` interface (CLK 38, CMD 40, D0 39; 4-bit would be new). The card is SDMMC, not
+  SPI, so track G is not needed here.
 
 ## The Waveshare ESP32-S3-Touch-LCD-3.49, assessed 2026-10-21
 
