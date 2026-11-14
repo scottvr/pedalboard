@@ -82,6 +82,11 @@ The 4.3B as a pedal home (decided 2026-10-16, after the gift ran):
    flashing on one port of the USB hub and ran normally on another, bare or in the carrier.
    The 4.3B's diagnosis rested on that symptom alone, so retest it on a known-good port
    (and a direct Mac port) before buying a replacement.
+   **Not dead (recorded 2026-11-14):** a bad USB cable on the hub; replaced, the board runs.
+   The paused hardware checks are open again: the per-render wiggle, `effects-profile` with
+   the panel scanning, and the footswitch. Note for the footswitch: DI0 (EXIO0) is not usable
+   as an input under a composed board, because the CH422G's single output enable drives it low
+   (targets#5 review, 2026-11-13); use a free GPIO (6, 15, 16, 43 or 44 since track A).
 
 Bench displays (ordered 2026-10-19; the ST7796 modules arrived 2026-10-21, the two Waveshare
 DSI panels 2026-10-22; the inventory is `docs/displays.md`, "Displays on hand"):

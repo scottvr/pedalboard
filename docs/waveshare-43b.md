@@ -598,6 +598,11 @@ from a running app boots normally; the board's own RESET button boots normally.
 
 ### The board's death (2026-10-19, after midnight)
 
+**Resolved, not dead (recorded 2026-11-14):** the fault was a bad USB cable on the hub. With
+the cable replaced the 4.3B runs normally; the "death" below and the power-circuit reading
+were wrong. Kept for the record of how one symptom was misread twice. The hardware checks it
+paused are open again.
+
 **Addendum 2026-10-23:** the symptom below, rapid LED and panel flashing at power-on, was
 reproduced on the LAFVIN dev board from one port of the USB hub, bare and in the carrier, and
 vanished on another port. That is a power-delivery fault on the hub side, not the board. The

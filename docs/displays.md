@@ -1,6 +1,7 @@
 # Bench displays: what was bought and why (2026-10-19)
 
-The 4.3B's death (`docs/waveshare-43b.md`, "The board's death") turned a question into a
+The 4.3B's apparent death (`docs/waveshare-43b.md`, "The board's death"; in the end a bad USB
+cable, not the board) turned a question into a
 purchase: with two bare P4 boards and a drawer of generic ESP32-S3 devkits, which displays
 serve the pedal *and* widen Geastack's hardware? Two were chosen. The reasoning is kept here
 so the next purchase does not redo it.
@@ -15,7 +16,7 @@ their own panels are listed with the bare panels; the P4 boards themselves are i
 | --- | --- | --- | --- |
 | LAFVIN kit 2.8" TFT (in the carrier) | SPI ST7789 240x320, FT6336U capacitive touch on the carrier's I2C | 2026-10-09 | The kit pedal, tracks B and C (`docs/kit.md`, `docs/display.md`) |
 | Freenove FNK0104AB ESP32-S3 2.8" display board | SPI ILI9341 240x320, FT6336U capacitive touch (the LAFVIN's touch controller); parts from the drawbot project's notes. Flash/PSRAM size, codec and pin map still to read off Freenove's repository | earlier, noticed in the inventory 2026-11-14 | A second all-in-one S3 for the composer's SPI adapter: track B's FT6336 binding applies as is, the panel needs an ILI9341 sibling of the ST7789 pipeline (same SPI bus, different init) |
-| Waveshare 4.3B panel, board dead | 16-bit RGB 800x480, GT911 touch; the ESP32-S3 board died 2026-10-19, the panel came off working | 2026-10-15 | Track F resumes on a replacement 4.3B (`docs/waveshare-43b.md`) |
+| Waveshare ESP32-S3-Touch-LCD-4.3B | 16-bit RGB 800x480, GT911 touch, CH422G expander; "died" 2026-10-19, but the fault was a bad USB cable on the hub (cable replaced, board runs; recorded 2026-11-14) | 2026-10-15 | Track F's gift board and the pedal's 4.3B home (`docs/waveshare-43b.md`) |
 | XIITIA 3.5" ST7796 module, 1 of 2 in hand | SPI ST7796 320x480, 8-pin, 3.3 V, no touch | 2026-10-21 (one seen; the order says two, second unaccounted for as of 2026-10-23) | Display-only pedal on a bare S3; the composer's SPI adapter; one spare or for a P4 |
 | Waveshare 5-DSI-TOUCH-A | 2-lane MIPI-DSI HX8394 720x1280, GT911-family touch, I2C backlight at 0x45, own 5 V lead | 2026-10-22 | Gea's first P4 run on the POE-ETH or Module-DEV-KIT; a new DSI controller for the targets (`docs/p4.md`) |
 | Waveshare 4.3inch DSI LCD (touch) | MIPI-DSI through a TC358762 bridge to 800x480 RGB, Goodix touch, powered over the ribbon | 2026-10-22 | The Pi case; a P4 experiment only after the 5-inch works (below) |
