@@ -22,7 +22,9 @@ case "$alias" in
   lafvin-display) target=esp32-s3-lafvin-multimedia-2.8-display ;;
   *) target="$alias" ;;
 esac
-app="$root/$target/app-builds/nam-pedalboard"
+# The app directory is named after the package: nam-pedalboard before the 2026-10-23
+# upstream merge, coyopedal after it. Take whichever this build root has.
+app=$(ls -d "$root/$target"/app-builds/*/ 2>/dev/null | head -1); app=${app%/}
 bin="${BIN:-$pedal/build/pedalboard.bin}"
 elf="$app/gea_embedded.elf"
 map="$app/gea_embedded.map"
