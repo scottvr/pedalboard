@@ -26,3 +26,8 @@ every build command. Python packages go in `~/.venv` (python.org 3.14) or the ID
 Flash the LAFVIN board from the pedal repo with
 `npx gea flash --board lafvin --no-build --monitor` after `npx gea build --board lafvin`;
 one build per build directory at a time. Don't flash hardware unless asked.
+
+**A second session on the P4 port** (another machine, started 2026-11-14) onboards from
+`docs/p4.md`, section "Running the P4 track in a separate Claude Code session": what to read,
+setup, branch names, which workspace files each session owns. Machine-specific paths go in a
+gitignored `CLAUDE.local.md`.
