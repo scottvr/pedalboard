@@ -15,7 +15,7 @@ their own panels are listed with the bare panels; the P4 boards themselves are i
 | Display | Interface, panel, touch | Arrived | Serves |
 | --- | --- | --- | --- |
 | LAFVIN kit 2.8" TFT (in the carrier) | SPI ST7789 240x320, FT6336U capacitive touch on the carrier's I2C | 2026-10-09 | The kit pedal, tracks B and C (`docs/kit.md`, `docs/display.md`) |
-| Freenove FNK0104AB ESP32-S3 2.8" display board | SPI ILI9341 240x320, FT6336U capacitive touch (the LAFVIN's touch controller); parts from the drawbot project's notes. Flash/PSRAM size, codec and pin map still to read off Freenove's repository | earlier, noticed in the inventory 2026-11-14 | A second all-in-one S3 for the composer's SPI adapter: track B's FT6336 binding applies as is, the panel needs an ILI9341 sibling of the ST7789 pipeline (same SPI bus, different init) |
+| Freenove FNK0104AB ESP32-S3 2.8" display board | SPI ILI9341 240x320 (BGR, inverted), FT6336U touch with INT and reset routed, ES8311 codec with mic and speaker amp, SDMMC 4-bit slot; ESP32-S3R8 (8 MB PSRAM) with 16 MB flash. Pin map below | earlier, noticed in the inventory 2026-11-14 | A second all-in-one S3 for the composer's SPI adapter, and a pedal home with a panel, codec and card on board: track B's FT6336 binding applies as is, the panel needs an ILI9341 sibling of the ST7789 pipeline |
 | Waveshare ESP32-S3-Touch-LCD-4.3B | 16-bit RGB 800x480, GT911 touch, CH422G expander; "died" 2026-10-19, but the fault was a bad USB cable on the hub (cable replaced, board runs; recorded 2026-11-14) | 2026-10-15 | Track F's gift board and the pedal's 4.3B home (`docs/waveshare-43b.md`) |
 | XIITIA 3.5" ST7796 module, 1 of 2 in hand | SPI ST7796 320x480, 8-pin, 3.3 V, no touch | 2026-10-21 (one seen; the order says two, second unaccounted for as of 2026-10-23) | Display-only pedal on a bare S3; the composer's SPI adapter; one spare or for a P4 |
 | Waveshare 5-DSI-TOUCH-A | 2-lane MIPI-DSI HX8394 720x1280, GT911-family touch, I2C backlight at 0x45, own 5 V lead | 2026-10-22 | Gea's first P4 run on the POE-ETH or Module-DEV-KIT; a new DSI controller for the targets (`docs/p4.md`) |
@@ -89,6 +89,40 @@ more closely but not the existing 7-inch target's init table, which is for a dif
   lead to the header. The older ribbon-powered panels are the bridge-chip ones.
 - Waveshare's P4 BSPs list the native-DSI "Raspberry adapter screens" they tested: 2.8, 3.4,
   4, 5, 6.25, 7, 7.9, 8.8, 10.1 and 11.9 inch, generic `esp_lcd_dsi`; the 4.3 is absent.
+
+## The Freenove FNK0104AB, read 2026-11-14
+
+Source: Freenove's `Freenove_ESP32_S3_Display` repository (archive on the LaCie,
+`Freenove_ESP32_S3_Display-main.zip`): the 2.8-inch schematic, the TFT_eSPI setup
+`FNK0104AB_2.8_240x320_ILI9341.h` and the tutorial sketches' `#else` branches (the `#ifdef`
+side is the 3.5-inch FNK0104N). The drawbot project's notes name the same board.
+
+| Function | Pins |
+| --- | --- |
+| Panel, SPI (HSPI port in the vendor setup) | MOSI 11, SCLK 12, MISO 13, CS 10, DC 46; reset tied to the board reset; backlight 45, high on (BSS138); 40 MHz, BGR, inversion on |
+| I2C, shared | SDA 16, SCL 15: FT6336U at 0x38, ES8311 at 0x18 |
+| Touch | INT 17, reset 18 (both routed, unlike the LAFVIN carrier) |
+| Audio | ES8311: MCLK 4, BCLK 5, WS 7, DOUT 8, DIN 6; SC8002B speaker amp enable 1; LMA2718 analog mic into the codec |
+| microSD, SDMMC 4-bit | CLK 38, CMD 40, D0 39, D1 41, D2 48, D3 47 |
+| Other | BOOT key 0, WS2812 LED 42, battery ADC 9 (200K/200K divider), TP4054 charger |
+| Headers | UART (TXD0, RXD0), expanded IO (21, 14, 3, 2), I2C |
+
+What it means for the pedal:
+
+- **Memory:** 16 MB flash and 8 MB octal PSRAM, the N16R8 the pedal is built for; the LAFVIN
+  partition layout fits.
+- **USB:** the one USB-C goes to the S3's native port (19/20); there is no UART bridge. The
+  pedal's host port for the interface is that same socket, so the console and flashing move to
+  the UART header, and the board cannot feed the interface's VBUS: the C port's VBUS reaches
+  the board's 5 V through a Schottky (B5819W), not the other way. A Y-cable or powered hub
+  supplies the interface, as on any bus-powered-device setup.
+- **Footswitch:** BOOT on GPIO 0 is free (the panel's DC is 46, not 0 as on the LAFVIN
+  carrier), so the pedal's BOOT-as-footswitch works without lifting a pin; the expanded-IO
+  header gives 21, 14, 3 and 2 for real switches.
+- **Composer:** the panel needs an ILI9341 path beside track B's ST7789 one (same SPI shape,
+  different init sequence; ESP-IDF has an `esp_lcd` ILI9341 component); the FT6336 binding takes
+  the routed INT and reset; ES8311 and SDMMC are already composable. The card is SDMMC, not SPI,
+  so track G is not needed here.
 
 ## The Waveshare ESP32-S3-Touch-LCD-3.49, assessed 2026-10-21
 
