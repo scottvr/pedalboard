@@ -48,11 +48,13 @@ The early design also established an important practical constraint: the ESP32-S
 
 The project therefore evolved around explicit operating states rather than attempting to do everything concurrently.
 
+This was all inherited wholesale from Coyopedal. 
+
 ---
 
 ## 2. Performance mode and maintenance mode
 
-A useful distinction emerged early.
+A useful distinction emerged early, again initially from constraints and again inherited by virtue of our status initially as just a fork of Coyo. 
 
 ### Performance mode
 
