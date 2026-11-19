@@ -33,6 +33,50 @@ file; the pedal fork's branch is `lavfin-kit-notes`.
   and `npm run check` after source changes. The display variant builds against the forks:
   `docs/build-environment.md`.
 
+## Roadmap (agreed 2026-11-18)
+
+The long view is `docs/Assimilator_Project_Evolution.md`: a north star, partly written ahead
+of fact. This is the order we take it in. The idea is to get one thin capture-to-play loop
+working early, with the hard steps done by hand, rather than finishing each tier before
+starting the next. Sprints are pulled from the top of this list.
+
+1. **Close tiers 0 and 1.**
+   - The BOOT footswitch regression on the 0.1.108 stack. It is Tier 0's whole interface,
+     and capture's long-press guard depends on it.
+   - Touch on the LAFVIN panel (the display renders as of 2026-11-14).
+   - Choose the Gea version to pin, since we now pull upstream only when we decide to.
+   - Tag a known-good image per tier in `images/`.
+2. **The drift verdict.** Do the padded loopback run on the MOMIX (a pot as a 6 to 10 dB
+   divider first), then decide whether excitation and response share a clock. A NAM
+   capture must stay sample-aligned for about 3 minutes; +54 ppm over 180 s is about 470
+   samples at 48 kHz if the drift sits between the two.
+3. **IR capture.** The loopback probe already plays, records and measures the delay;
+   deconvolution is what's left (stretch goal 2 under the codec item in "Backlog").
+4. **The manual NAM capture loop.**
+   - Play NAM's standard input through a rig and record the response to SD on the pedal.
+   - Train on a computer by hand, copy the model back, play it.
+   - This answers the artifact-format question (Assimilator doc, section 24, question 12)
+     and tests SD throughput while USB streams.
+   - If the MOMIX fails step 2, build the I2S codec and the analog front end (hi-Z buffer
+     with gain, output driver) on breakouts first. The P4's step 2 needs the same codec.
+5. **Automate training.** submit, status, retrieve and install, with a workstation reached
+   through the pedal's API as the first backend. Provisioning cloud compute comes later.
+6. **Decide the studio interface** (Tier 3: XMOS-class or not, 2 or 4 channels), informed by
+   real captures.
+
+Alongside:
+- The P4 track runs in its own session (`docs/p4.md`). The host twin is already the
+  correctness oracle the north-star doc asks for.
+- Buy a reference USB interface. It covers the studio stopgap and gives a known-good
+  baseline to judge the pedal's captures against. One that also works on the pedal's Full
+  Speed host can stand in for the MOMIX in steps 3 to 4.
+
+Deferred until something forces them:
+- the platform API above Geastack (wait for a non-ESP target);
+- `hardware/` manifests (the device sheets and the Geastack definitions cover it today);
+- the relay bypass (wait for enclosure work);
+- the Enterprise UI.
+
 ## Current sprint: the carrier's display, and the Wi-Fi tail
 
 Goal: the pedal draws on the kit's 2.8" panel and takes touch, through composed-target
