@@ -10,8 +10,12 @@ Claude Code from this directory so the whole set is in scope.
 | `targets/`   | Fork of `@geastack/targets` (board sources, ESP32 bindings)        | github.com/geastack/targets |
 | `core/`      | Fork of `@geastack/core` (`packages/chips` holds the chip catalog) | github.com/geastack/core    |
 
-Forks live under github.com/scottvr; clone them here with `gh repo clone scottvr/<name>`,
-which adds the `upstream` remote. Branch per upstream track; never patch `node_modules`.
+Forks live under github.com/scottvr. The three Geastack forks were renamed there on
+2026-11-18 to `geastack-cli`, `geastack-targets` and `geastack-core`; the local directories
+keep the short names, so clone with a target directory, e.g.
+`gh repo clone scottvr/geastack-cli cli`, which also adds the `upstream` remote (pushes to
+`upstream` are disabled locally; we push only to scottvr). Branch per upstream track; never
+patch `node_modules`.
 
 This directory is itself a repository: the project's notes (`README.md` "Status", `docs/`) and
 working list (`BACKLOG.md`: "Current sprint", "Upstream tracks") live here, in prose, and the

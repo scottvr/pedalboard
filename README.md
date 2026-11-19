@@ -28,7 +28,7 @@ Turns out that what was on hand was not nearly as similar as I had assumed: some
 The four are plain sibling clones, gitignored here, - not submodules that will apear on your disk if you clone this repo. `BACKLOG.md` ("Upstream
 tracks") records which branch of each fork carries what, what it has run on thus far and (eventually) any PRs, which
 should be all a reader needs to find the code do DIY. Forks live under github.com/scottvr; clone them here
-with `gh repo clone scottvr/<name>`, which adds the `upstream` remote.  When the code is complete and tested I will submit PRs to have the work upstreamed. If for whatever reason the PRs are not accepted, I'll merge the branches here into main in these forks and just maintain the new divergent versions here.
+with `gh repo clone scottvr/<name>` (the Geastack forks are `geastack-cli`, `geastack-targets` and `geastack-core` on GitHub since 2026-11-18; clone each into its short directory name, e.g. `gh repo clone scottvr/geastack-cli cli`), which adds the `upstream` remote.  When the code is complete and tested I will submit PRs to have the work upstreamed. If for whatever reason the PRs are not accepted, I'll merge the branches here into main in these forks and just maintain the new divergent versions here.
 
 ## Where to read
 
