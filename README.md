@@ -1,3 +1,11 @@
+## Update 20261118
+The geastack and coyopedal maintainer has not merged (nor provided feedback on) multiple PR's to upstream various hardware support and fixes 
+to the projects this one began with as dependencies. The goals and motivations have drifted - expanded really - so I'm not going to both rebasing
+the existing PRs or opening any new ones to those projects.  They can come here are pull them if they want the ccontributions. [More exciting things
+to come](https://github.com/scottvr/pedalboard/blob/main/docs/Assimilator_Project_Evolution.md)!
+
+The old README remains below.
+
 # a NAM guitar pedal on the LAFVIN ESP32-S3 Multimedia Kit (based on coyopedal)
 
 This is the working "umbrella" repository for everything the project touches that is not one repository's own
