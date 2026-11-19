@@ -121,3 +121,70 @@ with the UI being scrolled is optional and separate; upstream did not measure it
 
 The write-up goes in `docs/display-cost.md` here, in his table layout, with a pointer from
 the pedal repo only if the numbers end up in a PR.
+
+## First render (2026-11-14)
+
+Written up 2026-11-18 from the day's commits, the boot logs in `tmp/tmpdir/display-boot-20261114*.log`
+and the image index. The jumpers (MOSI to 16, D/C to 17) were soldered by 2026-11-13. They were
+powered for the first time this day, and the panel draws through them.
+
+**Stack.** The Oct 12 display image no longer fit. Its first boot today ran out of internal RAM:
+the NAM history failed to allocate, and so did the ST7789 staging band. The display variant was
+rebuilt on upstream's 0.1.108 stack (core 0.1.49) with three fork topics:
+- track B, cut fresh as `composed-st7789-spi` in cli, targets and core;
+- track A (no audio chip declared, so the ES8311 stopgap leaves the display definition: pedal `5296d0b`);
+- track H.
+
+They are merged into the `pedal-lafvin-display` integration branches of cli and targets (worktrees
+`cli-pedal-lafvin-display/` and `targets-pedal-lafvin-display/`), with chips taken from core's
+`composed-st7789-spi`.
+
+**Getting the panel to fit, in five builds:**
+
+1. `5296d0b`: the panel's staging band asked for 52,480 bytes and failed. The display block in
+   `package.json` was inheriting the AMOLED's native 410x502, because an app define silences the
+   composer's board define.
+2. `00d6ae8` sets the native 240x320 in the display block, and adds the WPA3 compatibility opt-out
+   the headless block already carries. Wi-Fi joins, but a 64-row band still does not fit.
+3. targets `09a0a90` adds `GEA_ST7789_FLUSH_ROWS`, and pedal `55a52e9` sets 16 rows, which makes
+   a band 7,680 bytes.
+4. A fallback that put the panel push task's stack in PSRAM (targets `0f8a50e`) made the panel
+   initialise, but every flush then failed in `panel_st7789_draw_bitmap` with `ESP_ERR_NO_MEM`.
+   It was reverted (`4ec3329`).
+5. Instead, the push task's internal stack is held while the staging ring allocates (`3b2eede`).
+   That is the first render.
+
+**The first render** (`images/lafvin-display-20261114-55a52e9-first-render`):
+- The staging ring is reduced to 1 of 4 bands under RAM pressure.
+- `display ready native=240x320 logical=320x240`; the first flush covers the full frame.
+- The UI census reads 15 nodes and 10,181 lit pixels; the render stack has 30,424 bytes of headroom.
+- The FT6336 initialises polled on I2C (SDA 2, SCL 1), with no reset or INT line on the carrier,
+  as expected.
+- Wi-Fi joins the main network; the footswitch line reads `footswitch on GPIO0 ready`.
+
+Not yet recorded as checked by eye: orientation, colour order and inversion. Touch has not been
+exercised. Both are the next bench items.
+
+**Audio does not fit beside the display.** The pedal falls back to maintenance ("Audio could not
+start"). This is the same signature as the 4.3B before tracks J and K:
+- The history planner fails with 9 rings unallocated, totalling 27,888 bytes.
+- The model is rejected (`S3-native runtime allocation failed`).
+- Internal RAM at NAM load (`internal DMA reserve released`) is free 60,832 with the largest
+  block 31,744. The headless 0.1.108 image on 2026-10-23 had free 70,472 with the same largest
+  block, and its graph places.
+
+So the display build costs about 9.6 KB of internal RAM before NAM loads. The display itself
+only starts after NAM. To recover it:
+
+- **FT6336 controller (about 4.3 KB, measured).** Its static instance is 4,268 bytes in internal
+  DRAM in the first-render ELF (`nm -S`), because `ft6336_controller.h` holds a static
+  4,096-byte task stack. This is the shape track J fixed for the GT911 (honour
+  `GEA_EMBEDDED_TOUCH_TASK_STACK_EXTERNAL`: controller in PSRAM, heap stack there). A J-shaped
+  topic for the FT6336 recovers about half the gap. It is a polled touch task, so a PSRAM
+  stack is safe; the push-task failure above was an SPI DMA path, not this.
+- **libstdc++ locale tables (about 2.2 KB, inferred).** `ctype_w`, `ctype_c` and the
+  `timepunct` caches appear in the display ELF's internal RAM but not the headless one.
+  Something in the display build pulls in iostream or locale.
+- **The rest (about 3 KB).** A headless 0.1.108 build's ELF and map are needed for a
+  same-stack comparison; none was saved. The cross-stack `nm` diff against the Oct 14 ELF is
+  too noisy to attribute this part.

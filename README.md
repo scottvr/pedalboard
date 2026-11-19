@@ -86,6 +86,10 @@ with `gh repo clone scottvr/<name>` (the Geastack forks are `geastack-cli`, `gea
 - The pedal itself runs on the 4.3B since the night of 2026-10-16: maintenance boot, Wi-Fi,
   panel and UI with direct PSRAM scanout. The audio-mode measurement waits on the Mac's LAN
   reachability (`docs/waveshare-43b.md`).
+- 2026-11-14: the kit's 2.8" panel draws (first render, on the 0.1.108 stack with fork tracks
+  A, B and H; `docs/display.md`, "First render"). Wi-Fi joins and touch initialises. The NAM
+  graph does not yet fit in internal RAM beside the display, so that build boots to maintenance;
+  the shortfall and the first fix are in the same section.
 - The working list is `BACKLOG.md`: current sprint, upstream tracks, backlog,
   done log.
 - Rob Murru's custom MOMIX firmware is only needed when the MOMIX headphone jack is the
