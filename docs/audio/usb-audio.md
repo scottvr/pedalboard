@@ -66,7 +66,7 @@ device is invisible to the host; only the loopback test below can see it.
 | iRig HD X           | Works upstream, UAC2                                                                                         |
 | iRig HD 2           | Works upstream through the fixed profile; we have no unit                                                    |
 | Scarlett (2nd gen+) | UAC2 class compliant; should work if its Full Speed config has 48 kHz duplex                                 |
-| MOTU 828 (model?)   | 828es/828x have class-compliant modes, mk3 Hybrid needs a driver; 28 channels do not fit a Full Speed packet |
+| MOTU 828mkII (FW)   | The user's unit (confirmed 2026-11-18): FireWire 400, not USB, so not a pedal device at all. Mac route: TB3-TB2-FW800 adapter chain + MOTU legacy driver on Sequoia (user reports only) |
 | VoiceLive Rack      | 2-channel 16-bit 44.1/48 kHz, works on iPad, so class compliant and almost certainly UAC1                    |
 | VoiceLive 3 Extreme | On hand (noted 2026-10-24). Streams stereo to a computer over USB; believed class compliant like the Rack. Not assessed: dump its descriptors on the Mac first (section 1 of the sheet), then profile it with the others |
 | Rig Kontrol 3       | Proprietary NI driver, not class compliant                                                                   |
