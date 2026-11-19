@@ -70,8 +70,10 @@ of a conflict-prone merge into a `main` that no longer matches anything upstream
 
 ## Cadence
 
-- Upstream moves: fetch, fast-forward `main`, rebase the open topics, rebuild the
-  integration branches. Do it before opening a PR and after upstream merges one of ours.
+- Upstream moves: fetch, fast-forward `main`, rebase the topics we still build with, rebuild
+  the integration branches. Do it when we want upstream's changes, not on upstream's
+  schedule. Since 2026-11-18 there are no PRs to keep mergeable (`BACKLOG.md`, "Upstream
+  stance"): a topic upstream has superseded is dropped, and the open PRs are left as they are.
 - Our own PRs on the forks (review of our own work from another machine, or a record): open
   them from the topic branch onto the integration branch, not onto `main`, so `main` keeps
   mirroring. They are optional; the integration branch's merge commits already record the
@@ -94,6 +96,11 @@ by cherry-picking the bench chain's commits onto upstream main; the three PR bra
 rebased and force-pushed to the fork with `--force-with-lease` (all three PRs mergeable
 again); both `pedal-43b` branches reset to upstream main and re-merged from the rebased
 topics. First real exercise of the model: the rebuild took one command per repo.
+
+2026-11-18: the model stays, without the PRs. Topic branches are still one change each,
+because that is what makes rebasing them and re-merging the integration branches cheap;
+they are no longer opened as PRs or rebased just to stay mergeable. "Topic branch = PR"
+above now reads "topic branch = one change anyone can cherry-pick".
 The pedal fork got its `upstream` remote the same evening, `main` fast-forwarded, and
 upstream's three new commits merged into `lavfin-kit-notes` with `--no-ff` (one doc
 conflict, both sides kept); as the pedal's integration branch it is merged, not rebased,

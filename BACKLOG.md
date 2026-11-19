@@ -15,12 +15,15 @@ file; the pedal fork's branch is `lavfin-kit-notes`.
 - Work that lives outside this repo (the Geastack forks) is a **track** in the table below:
   one row per upstream change, with its fork branch, what it has run on, and its PR. That
   table is the only place that state is kept.
-- Upstream-bound changes go up one per branch. The working branches (`lavfin-kit-notes` in
-  the pedal, `lafvin-composed-display` in the Geastack forks) take every commit first; when a
-  change is ready to send, it is cut as its own branch off that upstream's main by
-  cherry-pick and opened as its own PR. A change that alters a default or turns an undefined
-  case into an error is written on its own feature branch from the start and sent with the
-  design argument in the message, after asking upstream.
+- **Upstream stance (2026-11-18).** We keep building on Gea and keep the forks tracking
+  upstream, but we no longer maintain PRs: no new PRs to geastack or coyopedal, and the
+  open ones (targets#5, targets#6, cli#7) are not rebased just to stay mergeable. The
+  maintainer asked for the board support, then never answered the PRs, and twice upstream
+  landed the same change itself while ours waited. Anything our forks carry is public on
+  github.com/scottvr for him to take. Topic branches stay one change each, because that
+  keeps them easy to re-merge after upstream moves and easy for anyone to cherry-pick, not
+  because they are headed for a PR. When upstream lands its own version of one of our
+  changes, drop our topic and take theirs (as with K).
 - A task handed to a subagent gets a **brief** first: goal, the files it may touch, how it is
   tested, and what "done" looks like. The brief lives under the track or sprint item it serves;
   the agent reads the topic file under `docs/` for background and writes findings back there.
@@ -128,14 +131,16 @@ Display (tracks B and C below, then the bench):
    image is `images/lafvin-display-20261012-fa703b1-first-link`.
 6. First light on the panel: orientation, colour order, inversion, then touch. Raise the SPI
    clock only after it is right at 40 MHz.
-7. Write results into `docs/display.md`; PRs go up only after the panel has run.
+7. Write results into `docs/display.md`. (Was: PRs go up after the panel has run; none will
+   since 2026-11-18.)
 
 ## Upstream tracks
 
 Repositories: github.com/geastack/cli, geastack/targets, geastack/core (packages/chips). All
 GPL-3.0, releases most days, no CONTRIBUTING file, and the one author is `dashersw`, who
-also wrote coyopedal: one upstream conversation covers all four repositories, and the Gea
-PRs go first because the pedal's board definition depends on them. State as of 2026-10-12.
+also wrote coyopedal: one upstream conversation covers all four repositories. State as of
+2026-10-12. Since 2026-11-18 the PR column is a record, not a plan: "not yet" means "not
+sent", and none will be (see "Upstream stance" under Cadence).
 
 | Track | Change                                                                                                                                                                                                                                         | Repos               | Fork branch | Ran on hardware | PR  |
 | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- | ----------- | --------------- | --- |
@@ -152,7 +157,8 @@ PRs go first because the pedal's board definition depends on them. State as of 2
 | K     | `gea_ui_state_external.lf` also maps `libgea_active_geatsc.a` (the compiler's one hashed app object, 4,977 bytes of DIRAM on the 4.3B pedal, 4,269 of it .bss) to external RAM; ldgen does not existence-check an archive-level wildcard, so apps without the archive are unaffected | targets             | **Superseded 2026-10-23**: upstream `dfeb417` adds the same `libgea_active_geatsc.a` mapping to the fragment; branch and worktree dropped (old tip kept as tag `pre-rebase-ui-state-external-app-archive`) | yes, same boot as J | none needed |
 | L     | Base target yields `GEA_EMBEDDED_RUNTIME_TASK_STACK_BYTES` and `_EXTERNAL` to an app that declares them in `gea.defines`, the way it yields the panel-endian define to a composed board. Since upstream `b9db1ab` (2026-10-21, in 0.1.108) the base hard-sets 32768 and 1 for every board, and an app's own value meets it on the same command line: `-Werror` fails every engine unit with "redefined". coyopedal (upstream's own package.json too) sets 20480. | targets | topic `runtime-task-stack-app-override`: targets 90fc082 (`targets-track-l/`), with test | the pedal's revalidation build on 0.1.108 hit it 2026-10-23; the pedal-side workaround (`9029ad0`, drop the app defines) is what the build runs with | not yet; issue text drafted below |
 
-Draft issue for geastack/targets (track L), to open with the PR:
+Draft issue for geastack/targets (track L), written to go with a PR; kept as the
+explanation of the topic branch, not to be opened (2026-11-18):
 
 > **An app's `GEA_EMBEDDED_RUNTIME_TASK_STACK_BYTES` collides with the base's since b9db1ab**
 > Since b9db1ab the 2.06 base target defines `GEA_EMBEDDED_RUNTIME_TASK_STACK_BYTES=32768`
@@ -165,7 +171,7 @@ Draft issue for geastack/targets (track L), to open with the PR:
 > the attached PR does the same for the two runtime-stack defines, with a test.
 
 Branch model: `docs/branching.md` (adopted 2026-10-23). Each fork's `main` mirrors upstream;
-topic branches above are the PRs; integration branches build the pedal: `pedal-43b` (cli and
+topic branches above are one change each (no longer headed for PRs); integration branches build the pedal: `pedal-43b` (cli and
 targets, worktrees `cli-pedal-43b/` and `targets-pedal-43b/`: upstream main of 2026-10-23
 plus `--no-ff` merges of the gift board, G, H, I, A and J; cli 237ab6d, targets 1d38d0c)
 and `lafvin-composed-display` (the three main clones: B, C, H, I developed on it before the
@@ -195,12 +201,14 @@ tags in cli and targets until that build passes. Build commands in
 - Remove the ES8311 stopgap from both LAFVIN definitions once track A ships in released
   `@geastack/cli` and `targets`: the kit's bench build uses the stock packages, and without
   track A a codec-less definition does not build there (tried and reverted 2026-10-16).
+  Since 2026-11-18 track A will not be sent upstream, so this waits on upstream doing the
+  same change on its own, or on the kit's build moving to the forks like the display build.
 - `tools/audio-devices-table.py`: read the front matter of every `docs/audio/devices/*.md`
   sheet and render the "Interfaces assessed" table in `docs/audio/usb-audio.md` from it, so the
   sheets are the single source. Host-side, any time; worth it once a second sheet exists.
-- Ask upstream to rename `tools/esp32/amoled_remote.py`: its messages already say "CoyoPedal"
+- Rename `tools/esp32/amoled_remote.py` in the fork: its messages already say "CoyoPedal"
   on any board (fork commit `7b81d9c`) and its discovery match was never board-specific; only
-  the file name lags. Low priority, easy ask alongside the UAC1 PR.
+  the file name lags. Low priority; was going to be an upstream ask, now ours to do.
 - Browser UI for maintenance mode (`docs/web-ui.md`), own feature branch, developed against a
   headless S3 and inherited by the panel boards: a page served by the existing httpd, in the
   pedal's own stylesheets and font, over the existing API. Design note to the maintainer
