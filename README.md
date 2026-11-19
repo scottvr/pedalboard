@@ -1,8 +1,7 @@
 ## Update 20261118
 The geastack and coyopedal maintainer has not merged (nor provided feedback on) multiple PR's to upstream various hardware support and fixes 
-to the projects this one began with as dependencies. The goals and motivations have drifted - expanded really - so I'm not going to both rebasing
-the existing PRs or opening any new ones to those projects.  They can come here are pull them if they want the ccontributions. [More exciting things
-to come](https://github.com/scottvr/pedalboard/blob/main/docs/Assimilator_Project_Evolution.md)!
+to the projects this one began with as dependencies. The goals and motivations have drifted - expanded really - so I'm not going to continue rebasing
+and revising the existing PRs to adjust to their parallel development (more than once I've had to rebase to find that something added in a PR that has been sitting unanswerd for weeks in their repos has been added by them, making this just an unnecessary hassle) nor will I beopening any new ones to those projects.  They can come here are pull them if they want the ccontributions. [More exciting things to come](https://github.com/scottvr/pedalboard/blob/main/docs/Assimilator_Project_Evolution.md) here!
 
 The old README remains below.
 
