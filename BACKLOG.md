@@ -181,7 +181,7 @@ Display (tracks B and C below, then the bench):
    image is `images/lafvin-display-20261012-fa703b1-first-link`.
 6. First light on the panel: **first render 2026-11-14** (`docs/display.md`, "First render").
    Left: orientation, colour order and inversion by eye, then touch; and NAM does not fit beside
-   the display yet (about 9.6 KB short; an FT6336 topic shaped like track J recovers 4.3 KB of it).
+   the display yet (9.2 KB of static internal RAM short; the FT6336 and ST7789 static instances in PSRAM, track-J style, recover 6.5 KB; the rest is the compiled UI app's data).
    Raise the SPI
    clock only after it is right at 40 MHz.
 7. Write results into `docs/display.md`. (Was: PRs go up after the panel has run; none will

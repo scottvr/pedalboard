@@ -182,9 +182,21 @@ only starts after NAM. To recover it:
   `GEA_EMBEDDED_TOUCH_TASK_STACK_EXTERNAL`: controller in PSRAM, heap stack there). A J-shaped
   topic for the FT6336 recovers about half the gap. It is a polled touch task, so a PSRAM
   stack is safe; the push-task failure above was an SPI DMA path, not this.
-- **libstdc++ locale tables (about 2.2 KB, inferred).** `ctype_w`, `ctype_c` and the
-  `timepunct` caches appear in the display ELF's internal RAM but not the headless one.
-  Something in the display build pulls in iostream or locale.
-- **The rest (about 3 KB).** A headless 0.1.108 build's ELF and map are needed for a
-  same-stack comparison; none was saved. The cross-stack `nm` diff against the Oct 14 ELF is
-  too noisy to attribute this part.
+- **Measured on one stack (added 2026-11-18).** The headless 0.1.108 build's ELF and map
+  were still in `.gea/build` and are now saved beside its image
+  (`images/lafvin-20261023-9029ad0-stack-0.1.108.{elf,map}`). Internal static RAM is
+  9,162 bytes larger in the display build, which is the whole gap. All of it is
+  `.dram0.data` (+11,856, less 2,160 of `.dram0.bss`). By object file:
+  - **The compiled UI app, +6,788** (`libgea_active_geatsc.a`): many small initialised
+    objects, none over 512 bytes. Moving these means a placement attribute or PSRAM for the
+    app's statics in the compiler's output, which is Geastack's to shape.
+  - **The FT6336 controller, +4,268**: the item above.
+  - **The ST7789 `DisplayBackend::instance()` backend, +2,232**: a static instance, the same
+    pattern as the touch controller, and a candidate for the same PSRAM treatment.
+  - Offsets: `display_headless` (-965) and `audio_buffer_runtime` (-1,584) leave.
+
+  The FT6336 and ST7789 statics together recover about 6.5 KB of the 9.2 KB. On the 4.3B,
+  9.3 KB recovered was enough for the graph to place. So either both statics plus about
+  3 KB of the UI app's data are needed, or the graph places a little short of the full gap;
+  only a build will tell. The locale tables suspected from the cross-stack diff are in both
+  builds, so they are not part of it.
