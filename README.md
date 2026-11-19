@@ -71,8 +71,9 @@ with `gh repo clone scottvr/<name>` (the Geastack forks are `geastack-cli`, `gea
   pins (cli and targets 0.1.108, core 0.1.49) once one define collision in targets 0.1.108 is
   worked around (`BACKLOG.md`, track L); the headless image boots on the kit's dev board and
   streams with the MOMIX as before (counts equal every window, no errors, 87% of the block),
-  but its BOOT footswitch is dead and a press resets the chip, which the Oct 14 image on the
-  same board does not do: a regression to find before the stack moves (`BACKLOG.md`).
+  and its BOOT footswitch hold works (clean software reset into maintenance). The "dead
+  footswitch" reported that night was a misreading, withdrawn 2026-11-18: the A/B "old image"
+  was the new image, re-flashed, and the power-on resets look like the EN button (`BACKLOG.md`).
 - The board has been seated back in the carrier for these runs after some minor cosmetic surgeery and a bit of hobbling,
   with the native USB OTG port hosting the MOMIX; the display, touch and speaker need the upstream Geastack work tracked
   in `BACKLOG.md` ("Upstream tracks") before they can be used. The design is in `docs/display.md`.

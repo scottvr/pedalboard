@@ -99,7 +99,7 @@ unchecked; the cable for section 5 arrived 2026-10-13.
 
 ## 5. Loopback glitch test
 
-- [x] Run 2026-10-24 (Oct 14 image `7f3cbcb`, kit dev board, stock MOMIX, 1/4" TS to 1/8" TRS
+- [x] Run 2026-10-24 (logged as the Oct 14 image `7f3cbcb`, but probably the Oct 23 image `9029ad0`: the copy-over flash used that night never wrote the saved image (corrected 2026-11-18). The loopback probe is the same in both binaries, so the numbers stand. Kit dev board, stock MOMIX, 1/4" TS to 1/8" TRS
       cable from the headphone out to the guitar in). Two usable 120 s windows, both with
       `AUDIO TRY 120 LOOPBACK LEVEL 2` (tone at -2 dBFS; at the default -12 dBFS the return
       sat at -37 to -42 dBFS, under the probe's -34 dBFS floor, and nothing locked):

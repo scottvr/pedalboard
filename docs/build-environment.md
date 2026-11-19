@@ -56,9 +56,11 @@ header under GCC 15's `-Werror=attributes`.
 
 The fork CLI needs `npm ci` in `cli/` once. The headless `lafvin` alias keeps building with the
 installed packages into `.gea/build`. Two builds never share a build directory; a flash reads
-from one too. **Both aliases write `build/pedalboard.bin`**, the file `gea flash --no-build`
-reads, so after a display build copy it aside (`build/pedalboard-display.bin`) and rebuild the
-headless image before flashing the bench board. A clean build on this Mac is about forty
+from one too. **`gea flash --no-build` flashes the build directory's own
+`gea_embedded.bin`** (CLI 0.1.108, `buildImages()` in `src/esp32/build.mjs`), not
+`build/pedalboard.bin`. `build/pedalboard.bin` is only an output copy, and both aliases
+overwrite it. Copying a saved image over it does nothing: on 2026-10-23 that is how an
+"Oct 14 image" A/B test ended up re-flashing the Oct 23 image (corrected 2026-11-18). A clean build on this Mac is about forty
 minutes the first time (every IDF component is compiled; the configure alone is twenty-five on
 the spinning disk) and a few minutes after that.
 
@@ -75,8 +77,20 @@ Every build worth flashing again is filed with `tools/save-image.sh <alias> <tag
 right after it is built: the binary, ELF and map land in `images/` under a composite name
 (`<alias>-<date>-<pedal commit>-<tag>`) and `images/INDEX.md` gets a row with the four repos'
 commits, the framework stack, sizes and SHA-256 prefixes. The files are gitignored, the index
-is committed. Flash a saved image with `npx gea flash --board <alias> --no-build --image
-../images/<name>.bin`. Overrides when the build was set aside or built on the side stack:
+is committed. To flash a saved image, use esptool directly; `gea flash --image` only stages an
+OTA slot (it needs `--slot`). With the IDF environment active and the bootloader, partition
+table and OTA data from a build of the same alias (any `.gea/build*/…/app-builds/coyopedal/`,
+or a copy such as `tmp/flash-display-20261012/`):
+
+```sh
+python -m esptool --chip esp32s3 -p /dev/cu.usbmodem… write-flash --flash-mode dio \
+  --flash-size 16MB --flash-freq 80m 0x0 bootloader/bootloader.bin \
+  0x8000 partition_table/partition-table.bin 0xf000 ota_data_initial.bin \
+  0x20000 ../images/<name>.bin
+```
+
+The factory models (0x820000) and presets (0x860000) are left as they are. Check the boot log's
+`Compile time` line against the image index before trusting any comparison. Overrides when the build was set aside or built on the side stack:
 `BIN=`, `SHA=`, `STACK=`, `NOTES=` in the environment.
 
 ## The volume itself

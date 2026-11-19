@@ -41,8 +41,13 @@ working early, with the hard steps done by hand, rather than finishing each tier
 starting the next. Sprints are pulled from the top of this list.
 
 1. **Close tiers 0 and 1.**
-   - The BOOT footswitch regression on the 0.1.108 stack. It is Tier 0's whole interface,
-     and capture's long-press guard depends on it.
+   - Confirm the BOOT footswitch on the 0.1.108 image at the bench: the regression was
+     withdrawn 2026-11-18 (see Done, 2026-10-23), leaving a 5-minute check. Flash
+     `images/lafvin-20261023-9029ad0-stack-0.1.108.bin` with esptool
+     (`docs/build-environment.md`), confirm `Compile time: Oct 23 2026 15:42:39`.
+     Hold each button 3 s: BOOT should give `rst:0xc` and a maintenance boot, EN a
+     `POWERON` on release. Then a deliberate ~200 ms tap in audio mode must print
+     `BOOT tap:`; no tap line was ever logged on either image, so that is the open part.
    - Touch on the LAFVIN panel (the display renders as of 2026-11-14).
    - Choose the Gea version to pin, since we now pull upstream only when we decide to.
    - Tag a known-good image per tier in `images/`.
@@ -92,14 +97,14 @@ Wi-Fi tail (one bench visit):
    full scale. The counter exists since 2026-10-13: `AUDIO TRY 300 LOOPBACK` (pedal commit
    `7f3cbcb`), host-tested; it also measures the round-trip latency and the drift. **Done
    2026-10-24, 02:00 to 05:10** (see Done): 30 to 37 ms round trip, +54 ppm, 0 glitches after
-   the onset, on the Oct 14 image; the clean confirming window came at 05:31 (0 clipped, 7
+   the onset, on what was logged as the Oct 14 image (probably the Oct 23 one, see Done); the clean confirming window came at 05:31 (0 clipped, 7
    bursts, 30.6 to 34.1 ms, +56.5 ppm), the loop decaying instead of ringing because ten -
    presses had moved the master by less than a decibel: the loop sits at unity, so a pad in
    the cable (a pot as a divider, 6 to 10 dB) is required before the next run.
    Numbers and the method in the MOMIX sheet. Left: the probe counts the monitor's echo at
    each burst edge as glitches (645, all at edges, none inside), so a guard band around the
    edges is the next probe change, with the host test extended to a burst-plus-echo case;
-   and the same run on the 0.1.108 image once its footswitch regression is understood.
+   and the same run on the 0.1.108 image (its footswitch regression was withdrawn 2026-11-18).
 
 The 4.3B as a pedal home (decided 2026-10-16, after the gift ran):
 
@@ -362,8 +367,15 @@ boot needs no further purchase; the 5-DSI-TOUCH-A (sprint item 10) is its panel.
   image the BOOT footswitch does nothing (no tap line) and a press resets the chip with a
   power-on reset, while the Oct 14 image flashed back onto the same board answers the same
   button with a clean hold, software reset and maintenance boot (`tmp/screen-lafvin.log`,
-  `tmp/ab-old-image-lafvin-20261023.log`). A regression of the 0.1.108 stack on this board;
-  cause unknown. The base's new button service compiles to nothing here (no button table)
+  `tmp/ab-old-image-lafvin-20261023.log`). **Withdrawn 2026-11-18:** the A/B "Oct 14 image"
+  was never flashed. Copying it over `build/pedalboard.bin` and running `gea flash --no-build`
+  re-flashed the build directory's `gea_embedded.bin`, the Oct 23 image (its log shows
+  `Compile time: Oct 23 2026 15:42:39` and the new `footswitch on GPIO0 ready` line, which the
+  Oct 14 binary does not contain). So the clean hold, software reset and maintenance boot were
+  the new image working. The `POWERON` resets fit the EN button (a BOOT-held reset would have
+  shown `boot:0x0`; brownout is an interrupt in this sdkconfig). The footswitch setup
+  disassembles identically in both ELFs and nothing else touches GPIO0. Original text kept:
+  A regression of the 0.1.108 stack on this board; cause unknown. The base's new button service compiles to nothing here (no button table)
   and its launcher-button code is unchanged, so neither is it. Next: flash the new image with
   no serial port open on the Mac and hold BOOT, to take the CH343 auto-reset circuit out of
   the picture; then diff the two images' GPIO0 setup (`gpio_dump_io_configuration` over the
@@ -448,7 +460,10 @@ boot needs no further purchase; the 5-DSI-TOUCH-A (sprint item 10) is its panel.
   run; the volume buttons are the headphone master, about 1 dB a press upward and no lower
   than the connect-time level,
   persisting across the pedal's software reboot; `gea flash --image` wants a launcher build,
-  so a saved image is flashed by copying it over `build/pedalboard.bin`.
+  so a saved image is flashed by copying it over `build/pedalboard.bin`. (Wrong, corrected
+  2026-11-18: that copy is ignored and the last build is flashed; use esptool,
+  `docs/build-environment.md`. This run was therefore probably on the Oct 23 image; the probe
+  is identical in both binaries, so the numbers stand.)
 
 - 2026-10-08: kit evaluated; pin map; decision for the headless-first route; generic UAC1
   discovery written and host-tested against the custom-firmware fixture.
